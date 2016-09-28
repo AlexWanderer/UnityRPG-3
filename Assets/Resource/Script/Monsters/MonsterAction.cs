@@ -23,7 +23,7 @@ public class MonsterAction : MonoBehaviour {
 
    protected GameObject Condition = null;            // 상태 Effect가 들어갈 Obj
    public GameObject Target = null;                    // 공격할 대상
-    protected Animator ani = null;
+    public Animator ani = null;
 
     void Awake()
     {

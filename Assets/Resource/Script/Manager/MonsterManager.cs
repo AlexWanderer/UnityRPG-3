@@ -59,6 +59,7 @@ public class MonsterManager : MonoBehaviour {
     // Monster가 다 죽으면 GM의 Set_Next()를 호출한다.
     public void Check_Dead(GameObject monster)
     {
+      //  monster.GetComponent<MonsterAction>().ani.
         monster.SetActive(false);
         PlayerManager.Get_Inctance().Check_Target();
 

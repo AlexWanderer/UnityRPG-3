@@ -45,12 +45,13 @@ public class WizardAction : PlayerAction
     {
         Hp -= AttackDamage;
         UIManager.Get_Inctance().Set_Damage(gameObject, AttackDamage, type);
+        UIManager.Get_Inctance().Set_PlayerHp(Hp / InitHP, transform.parent.name);
 
         if (Hp <= 0)
         {
             // 만약 Hp가 0이하면 관리자에게 죽었다고 보고한다.
             state = STATE.DEAD;
-           // PlayerManager.Get_Inctance().Check_Dead(gameObject);
+            PlayerManager.Get_Inctance().Check_Dead(gameObject);
             return false;
         }
 

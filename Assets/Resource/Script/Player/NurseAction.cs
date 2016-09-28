@@ -47,6 +47,7 @@ public class NurseAction : PlayerAction {
     {
         Hp -= AttackDamage;
         UIManager.Get_Inctance().Set_Damage(gameObject, AttackDamage, type);
+        UIManager.Get_Inctance().Set_PlayerHp(Hp / InitHP, transform.parent.name);
 
         if (Hp <= 0)
         {

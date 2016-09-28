@@ -38,6 +38,7 @@ public class MikuNegiAction : MonsterAction {
         {
             // 만약 Hp가 0이하면 관리자에게 죽었다고 보고한다.
             state = STATE.DEAD;
+            ani.SetBool("Dead", true);
             MonsterManager.Get_Inctance().Check_Dead(gameObject);
             return false;
         }

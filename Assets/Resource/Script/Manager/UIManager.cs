@@ -9,7 +9,7 @@ public class UIManager : MonoBehaviour
     public GameObject Damage_Prefab = null;                         // Damage Text Prefab              
     public GameObject Heal_Prefab = null;                               // Heal Text Prefab
     public GameObject SkillDamage_Prefab = null;                  // Skill Damage Text Prefab
-
+    public UISprite[] Players_HP = null;                                     // UI Player Hpbars ( 0 : Center  1 : Sub1    2 : Sub2 )
 
     private static UIManager instance = null;
 
@@ -34,6 +34,37 @@ public class UIManager : MonoBehaviour
             Debug.Log("Fail to get Manager Instance");
         }
         return instance;
+    }
+
+    public void Set_PlayerHp(float value, string typename)
+    {
+        int type = -1;
+        switch(typename)
+        {
+            case "Center":
+                {
+                    type = 0;
+                    break;
+                }
+            case "Sub1":
+                {
+                    type = 1;
+                    break;
+                }
+            case "Sub2":
+                {
+                    type = 2;
+                    break;
+                }
+        }
+
+        if(type == -1)
+        {
+            Debug.Log("Player Hp Error");
+            return;
+        }
+
+        Players_HP[type].fillAmount = value;
     }
 
     // Target의 위치에 Hpbar를 만드는 함수.
