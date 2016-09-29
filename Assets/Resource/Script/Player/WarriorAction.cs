@@ -14,7 +14,6 @@ public class WarriorAction : PlayerAction
     {
 
         ani = GetComponent<Animator>();
-     //   gameObject.SetActive(false);
     }
 
     public override void Set_Move()
@@ -27,7 +26,6 @@ public class WarriorAction : PlayerAction
         state = STATE.ATTACK;
         ani.SetBool("Move", false);
         ani.SetBool("Attack", true);
-        StandPos = transform.position;
 
         StartCoroutine(C_Attack());
     }
@@ -37,12 +35,19 @@ public class WarriorAction : PlayerAction
 
         ani.SetBool("Attack", false);
         ani.SetBool("Move", false);
-        transform.position = StandPos;
+        transform.localPosition = StandPos;
         transform.rotation = Quaternion.identity;
 
         state = STATE.IDLE;
 
         
+    }
+    public override void Set_Dead()
+    {
+        state = STATE.DEAD;
+        StopAllCoroutines();
+        PlayerManager.Get_Inctance().Check_Dead();
+        ani.SetBool("Dead", true);
     }
 
     public override bool Set_Demage(float AttackDamage, string type)
@@ -54,8 +59,7 @@ public class WarriorAction : PlayerAction
         if (Hp <= 0)
         {
             // 만약 Hp가 0이하면 관리자에게 죽었다고 보고한다.
-            state = STATE.DEAD;
-            // PlayerManager.Get_Inctance().Check_Dead(gameObject);
+            Set_Dead();
             return false;
         }
 
@@ -70,8 +74,8 @@ public class WarriorAction : PlayerAction
             if (state != STATE.ATTACK)
                 yield break;
 
-            // Target이 null일경우 MonsterManager에게 새로운 Target을 받아온다.
-            if (Target == null)
+            // Target이 null이거나 죽어있는 MonsterManager에게 새로운 Target을 받아온다.
+            if (Target == null || Target.state.ToString().Equals("DEAD"))
             {
                 MonsterManager.Get_Inctance().Set_ReTarget(this);
             }
@@ -125,7 +129,7 @@ public class WarriorAction : PlayerAction
     IEnumerator C_Special_Skill()
     {
         // Target이 죽었을시 새로운 Target을 받는다.
-        if (Target.gameObject.activeSelf == false)
+        if (Target.state.ToString().Equals("DEAD"))
             MonsterManager.Get_Inctance().Set_ReTarget(this);
 
         // ActionCamera에게 Warrior의 애니메이션을 실행시키게 한다.
@@ -146,6 +150,7 @@ public class WarriorAction : PlayerAction
         yield return new WaitForSeconds(0.8f);
 
         ani.speed = 1f;
+        ani.SetTrigger("Idle");
 
         // ActionCamera의 Camera를 끈다.
         ActionCamera_Action.Get_Inctance().CameraOff();
@@ -159,6 +164,7 @@ public class WarriorAction : PlayerAction
 
         // Player들을 Attack상태로 바꾼다. ( Active 변환 때문.)
         PlayerManager.Get_Inctance().Set_Attack();
+
 
         yield break;
     }

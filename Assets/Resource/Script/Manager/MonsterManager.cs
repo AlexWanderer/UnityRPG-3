@@ -41,7 +41,15 @@ public class MonsterManager : MonoBehaviour {
         for(int i = 0; i < Monster_Group.transform.childCount; i++)
         {
             GameObject Monster = Monster_Group.transform.GetChild(i).gameObject;
-            Monster.GetComponent<MonsterAction>().Target = PlayerManager.Get_Inctance().Characters[i];
+            MonsterAction monster_action = Monster.GetComponent<MonsterAction>();
+
+            if(monster_action.type.ToString().Equals("BOSS"))
+            {
+                GameManager.Get_Inctance().Set_Boss();
+                return;
+            }
+
+            monster_action.Target = PlayerManager.Get_Inctance().Characters[i];
             // 만약 자식오브젝트가 Monster가 아니라면 continue한다.
             if (Monster.CompareTag("Monster") == false)
             {
@@ -51,7 +59,21 @@ public class MonsterManager : MonoBehaviour {
             Monster.SetActive(true);
             Monsters.Add(Monster);
             //Monster들이 Attack을 시작하도록 함수를 호출한다.
-            Monster.GetComponent<MonsterAction>().StartSet_Attack();
+            monster_action.StartSet_Attack();
+        }
+    }
+
+    public void Set_Idle()
+    {
+        for (int i = 0; i < Monsters.Count; i++)
+        {
+            if (Monsters[i] == null)
+            {
+                continue;
+            }
+
+
+            Monsters[i].GetComponent<MonsterAction>().Set_Idle();
         }
     }
 
@@ -59,8 +81,6 @@ public class MonsterManager : MonoBehaviour {
     // Monster가 다 죽으면 GM의 Set_Next()를 호출한다.
     public void Check_Dead(GameObject monster)
     {
-      //  monster.GetComponent<MonsterAction>().ani.
-        monster.SetActive(false);
         PlayerManager.Get_Inctance().Check_Target();
 
         int DeadCount = 0;
@@ -68,7 +88,7 @@ public class MonsterManager : MonoBehaviour {
         //Monster의 active가 false == Dead . 그러므로 DeadCount를 늘린다.
         for(int i = 0; i < Monsters.Count; i++)
         {
-            if (Monsters[i].activeSelf == false)
+            if (Check_MonsterState(Monsters[i], "DEAD"))
                 DeadCount++;
         }
 
@@ -85,7 +105,7 @@ public class MonsterManager : MonoBehaviour {
     {
         for (int i = 0; i < Monsters.Count; i++)
         {
-            if (Monsters[i].activeSelf == true)
+            if (Check_MonsterState(Monsters[i], "DEAD") == false) 
             {
                 Player.Target = Monsters[i].GetComponent<MonsterAction>();
             }
@@ -147,5 +167,15 @@ public class MonsterManager : MonoBehaviour {
         }
 
         return;
+    }
+    public bool Check_MonsterState(GameObject Monster, string State)
+    {
+        MonsterAction monster = Monster.GetComponent<MonsterAction>();
+        if (monster.state.ToString().Equals(State))
+        {
+            return true;
+        }
+
+        return false;
     }
 }

@@ -26,8 +26,6 @@ public class DamageAction : MonoBehaviour {
         catch { return; }
         //Damage Text의 text를 damage값으로 설정한다.
         GetComponentInChildren<UILabel>().text = ((int)value).ToString();
-        GetComponent<TweenPosition>().to = transform.localPosition;
-        GetComponent<TweenPosition>().from = transform.localPosition + new Vector3(0f, 1f, 0f);
 
         gameObject.SetActive(true);
     }

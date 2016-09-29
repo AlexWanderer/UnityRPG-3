@@ -12,6 +12,12 @@ public class MonsterAction : MonoBehaviour {
         DEAD,                             // 죽음
         MAX,
     };
+    public enum TYPE
+    {
+        BASE,
+        BOSS,
+    };
+
 
 
     protected const float initHP = 10f;                        // MAX HP ( 정적 )
@@ -20,6 +26,7 @@ public class MonsterAction : MonoBehaviour {
     public float Attack = 1f;                                       // 현재 ATTACK
         
     public STATE state = STATE.IDLE;                        // 상태
+    public TYPE type = TYPE.BASE;
 
    protected GameObject Condition = null;            // 상태 Effect가 들어갈 Obj
    public GameObject Target = null;                    // 공격할 대상
@@ -35,7 +42,10 @@ public class MonsterAction : MonoBehaviour {
     public virtual void Set_Idle()
     {
     }
-    
+    public virtual void Set_Dead()
+    {
+
+    }
     // state를 ATTACK으로 바꾸고 PlayerManager에게 Target을 요구하는 등의 Attack을 준비하는 함수. 
     public virtual void StartSet_Attack()
     {
@@ -63,4 +73,5 @@ public class MonsterAction : MonoBehaviour {
     public virtual void State_OFF()
     {
     }
+    public void Off_Active() { gameObject.SetActive(false); }
 }

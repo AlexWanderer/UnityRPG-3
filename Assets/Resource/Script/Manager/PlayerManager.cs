@@ -63,20 +63,8 @@ public class PlayerManager : MonoBehaviour
                 break;
 
             case STATE.MOVE:
-                {
-                    // Character의 이동 Ani를 호출한다.
-                    for (int i = 0; i < Characters.Length; i++)
-                    {
-                        if (Characters[i] == null)
-                        {
-                            break;
-                        }
-                           
-                        Characters[i].GetComponent<PlayerAction>().Set_Move();
-                    }
-                    Set_Move();
                     break;
-                }
+
             case STATE.ATTACK:
                 {
                     if (Input.GetMouseButton(0) == true)
@@ -88,10 +76,34 @@ public class PlayerManager : MonoBehaviour
         }
     }
 
-    // Monster출연지점을 만날때까지 이동한다.
-    void Set_Move()
+    public void Set_Move()
     {
-        transform.Translate(Vector3.forward * Time.deltaTime * 3f);
+        state = STATE.MOVE;
+        // Character의 이동 Ani를 호출한다.
+        for (int i = 0; i < Characters.Length; i++)
+        {
+            if (Characters[i] == null)
+            {
+                break;
+            }
+
+            Characters[i].GetComponent<PlayerAction>().Set_Move();
+        }
+        GetComponent<BoxCollider>().enabled = true;
+        StartCoroutine(C_PlayerMove());
+
+    }
+    // Monster출연지점을 만날때까지 이동한다.
+    IEnumerator C_PlayerMove()
+    {
+        while (true)
+        {
+            if (state != STATE.MOVE)
+                yield break;
+
+            transform.Translate(Vector3.forward * Time.deltaTime * 3f);
+            yield return null;
+        }
     }
     // Character의 Target을 설정해주고 Attack함수를 호출한다.
     public void Set_Attack()
@@ -132,18 +144,13 @@ public class PlayerManager : MonoBehaviour
             Characters[i].GetComponent<PlayerAction>().Set_Idle();
         }
     }
-    public void Set_StateMove()
-    {
-        state = STATE.MOVE;
-        return;
-    }
 
     // 매개변수 Monster의 Target에 살아있는 Character를 찾아 할당해주는 함수.
     public void Set_ReTarget(MonsterAction Monster)
     {
         for (int i = 0; i < Characters.Length; i++)
         {
-            if (Characters[i] == null)
+            if (Characters[i] == null || Check_PlayerState(Characters[i], "DEAD"))
             {
                 continue;
             }
@@ -264,9 +271,8 @@ public class PlayerManager : MonoBehaviour
 
     // Player가 죽으면 실행되는 함수.
     // Player가 다 죽으면 GM의 Set_Faild()를 호출한다.
-    public void Check_Dead(GameObject player)
+    public void Check_Dead()
     {
-        player.SetActive(false);
         MonsterManager.Get_Inctance().Check_Target();
 
         int DeadCount = 0;
@@ -274,8 +280,10 @@ public class PlayerManager : MonoBehaviour
         //Character의 active가 false == Dead . 그러므로 DeadCount를 늘린다.
         for (int i = 0; i < Characters.Length; i++)
         {
-            if (Characters[i].activeSelf == false)
+            if (Characters[i].GetComponent<PlayerAction>().state.ToString().Equals("DEAD"))
+            {
                 DeadCount++;
+            }
         }
 
         //Character의 죽은 숫자가 List에 있는 캐릭터숫자랑 동일하면 모든 Player가 죽은거니 GM의 Set_Faild()를 호출한다.
@@ -284,6 +292,16 @@ public class PlayerManager : MonoBehaviour
             GameManager.Get_Inctance().Set_Faild();
             return;
         }
+    }
+    public bool Check_PlayerState(GameObject Player, string State)
+    {
+        PlayerAction player = Player.GetComponent<PlayerAction>();
+        if(player.state.ToString().Equals(State))
+        {
+            return true;
+        }
+
+        return false;
     }
 
     void OnTriggerEnter(Collider obj)

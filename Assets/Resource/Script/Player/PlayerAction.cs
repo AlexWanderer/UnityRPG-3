@@ -8,6 +8,7 @@ public class PlayerAction : MonoBehaviour
         IDLE,                           // 대기
         ATTACK,                     // 공격
         DAMAGE,                   // 공격받음
+        SKILL,                          // 스킬중
         DEAD,                        // 사망
         MAX,
     }
@@ -35,6 +36,10 @@ public class PlayerAction : MonoBehaviour
     public virtual void Set_Idle()
     {
     }
+    public virtual void Set_Dead()
+    {
+
+    }
 
     // 데미지를 입을때 실행되는 함수
     public virtual bool Set_Demage(float AttackDamage, string type)
@@ -58,4 +63,5 @@ public class PlayerAction : MonoBehaviour
 
     //  Player의 InitHp를 반환하는 함수.
     public float Get_InitHP() { return InitHP; }
+    public void Off_Active() { gameObject.SetActive(false); }
 }

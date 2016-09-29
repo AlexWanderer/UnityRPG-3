@@ -1,8 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-// MikuNegi Monster의 스크립트.
-public class MikuNegiAction : MonsterAction {
+public class BossKinokoAction: MonsterAction {
 
     void OnEnable()
     {
@@ -111,11 +110,11 @@ public class MikuNegiAction : MonsterAction {
         Target.GetComponent<PlayerAction>().Set_Demage(Attack, null);
     }
 
- 
+
     void OnTriggerEnter(Collider obj)
     {
         // Player랑 충돌하면 Target을 충돌한 Player로 변경한다.
-        if(obj.CompareTag("Player"))
+        if (obj.CompareTag("Player"))
         {
             Target = obj.gameObject;
         }

@@ -23,17 +23,24 @@ public class WizardAction : PlayerAction
     }
     public override void Set_Attack()
     {
-        StandPos = transform.position;
+        state = STATE.ATTACK;
         ani.SetBool("Attack", true);
     }
     public override void Set_Idle()
     {
-        StopCoroutine(C_MagicAttack());
+        StopAllCoroutines();
         ani.SetBool("Move", false);
         ani.SetBool("Attack", false);
-        transform.position = StandPos;
+        transform.localPosition = StandPos;
         transform.rotation = Quaternion.identity;
 
+    }
+    public override void Set_Dead()
+    {
+        state = STATE.DEAD;
+        StopAllCoroutines();
+        PlayerManager.Get_Inctance().Check_Dead();
+        ani.SetBool("Dead", true);
     }
     public override void Touch_Skill()
     {
@@ -50,8 +57,7 @@ public class WizardAction : PlayerAction
         if (Hp <= 0)
         {
             // 만약 Hp가 0이하면 관리자에게 죽었다고 보고한다.
-            state = STATE.DEAD;
-            PlayerManager.Get_Inctance().Check_Dead(gameObject);
+            Set_Dead();
             return false;
         }
 
@@ -74,8 +80,11 @@ public class WizardAction : PlayerAction
     }
     IEnumerator C_MagicAttack()
     {
+        if (state != STATE.ATTACK)
+            yield break;
+
         // Target이 null이거나 죽어있으면 새로운 Target을 받는다.
-        if (Target == null || Target.gameObject.activeSelf == false)
+        if (Target == null || Target.state.ToString().Equals("DEAD"))
         {
             MonsterManager.Get_Inctance().Set_ReTarget(this);
         }
@@ -140,17 +149,19 @@ public class WizardAction : PlayerAction
     public override void Special_Skill()
     {
         // Player가 Idle상태이거나 Move상태이면 버튼을 눌러도 함수가 실행되지 않는다.
-        //if (PlayerManager.Get_Inctance().state.ToString().Equals("IDLE") || PlayerManager.Get_Inctance().state.ToString().Equals("MOVE"))
-        //    return;
+        if (PlayerManager.Get_Inctance().state.ToString().Equals("IDLE") || PlayerManager.Get_Inctance().state.ToString().Equals("MOVE"))
+            return;
 
         //Target이 null이거나 죽어있으면 실행하지 않는다.
-        //if (Target == null || Target.gameObject.activeSelf == false)
+        //if (Target == null || Target.state.ToString().Equals("DEAD"))
         //    return;
 
         StartCoroutine(C_Special_Skill());
     }
     IEnumerator C_Special_Skill()
     {
+       
+
         // Target이 죽었을시 새로운 Target을 받는다.
         if (Target.gameObject.activeSelf == false)
             MonsterManager.Get_Inctance().Set_ReTarget(this);
@@ -186,6 +197,8 @@ public class WizardAction : PlayerAction
         Set_SpecialSkill_Effect();
 
         yield return new WaitForSeconds(0.8f);
+
+        ani.SetTrigger("Idle");
 
         // ActionCamera의 Camera를 끈다.
         ActionCamera_Action.Get_Inctance().CameraOff();

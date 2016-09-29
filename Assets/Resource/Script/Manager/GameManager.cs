@@ -8,6 +8,7 @@ public class GameManager : MonoBehaviour {
     {
         IDLE,                               // 대기
         NEXT,                             // 다음장소로 이동
+        BOSS,                             // 보스 만남
         FAILD,                            // 실패
         WIN,                              // 승리
         MAX 
@@ -24,6 +25,7 @@ public class GameManager : MonoBehaviour {
     void Awake ()
     {
         instance = this;
+        GMstate = GMSTATE.NEXT;
       
     }
     public static GameManager Get_Inctance()
@@ -52,10 +54,20 @@ public class GameManager : MonoBehaviour {
                 break;
 
             case GMSTATE.NEXT:
-                // 다음 장소로 가기 위해 Player들을 전부 대기상태로 한번 만들고 이동한다.
-                PlayerManager.Get_Inctance().Invoke("Set_Idle", 0.5f);
-                GMstate = GMSTATE.IDLE;
-                break;
+                {
+                    // 다음 장소로 가기 위해 Player들을 전부 대기상태로 한번 만들고 이동한다.
+                    PlayerManager.Get_Inctance().Invoke("Set_Idle", 0.5f);
+                    PlayerManager.Get_Inctance().Invoke("Set_Move", 0.6f);
+                    GMstate = GMSTATE.IDLE;
+                    break;
+                }
+
+            case GMSTATE.BOSS:
+                {
+                    PlayerManager.Get_Inctance().Set_Idle();
+                    MonsterManager.Get_Inctance().Set_Idle();
+                    break;
+                }
         }
 	}
 
@@ -69,6 +81,11 @@ public class GameManager : MonoBehaviour {
     public void Set_Faild()
     {
         GMstate = GMSTATE.FAILD;
+    }
+
+    public void Set_Boss()
+    {
+        GMstate = GMSTATE.BOSS;
     }
 
 }
