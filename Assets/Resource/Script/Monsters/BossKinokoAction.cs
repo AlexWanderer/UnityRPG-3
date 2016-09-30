@@ -5,7 +5,7 @@ public class BossKinokoAction: MonsterAction {
 
     void OnEnable()
     {
-        UIManager.Get_Inctance().Set_Hpbar(gameObject);                             // 몬스터가 활성화되면 UIManager에게 자신의 Hpbar를 만들라고 요구한다.
+        ActionCamera_Action.Get_Inctance().Set_preparation(transform, "Boss");
     }
 
     public override void Set_Idle()
@@ -53,13 +53,6 @@ public class BossKinokoAction: MonsterAction {
     public override void Set_Charm(float time)
     {
         state = STATE.CHARM;
-
-        GameObject CharmEffect = Instantiate(EffectManager.Get_Inctance().Charm_Effect) as GameObject;
-        CharmEffect.transform.parent = Condition.transform;
-        CharmEffect.transform.localPosition = Vector3.zero;
-
-        Invoke("State_OFF", time);
-        Invoke("StartSet_Attack", time);
     }
     public override void State_OFF()
     {
@@ -88,12 +81,10 @@ public class BossKinokoAction: MonsterAction {
             Vector3 v = targetPos - transform.position;
             transform.rotation = Quaternion.LookRotation(v);
 
-            // Target과의 거리가 1.5f이상이면 앞으로 움직이고 아니면 공격한다.
+            // Target과의 거리가 1.5f이상이면 가만히 있고 아니면 공격한다.
             if (Distance(Target.transform.position, transform.position) > 1.5f)
             {
                 ani.SetBool("Attack", false);
-                ani.SetBool("Move", true);
-                transform.Translate(Vector3.forward * Time.deltaTime * 1f);
             }
             else
             {

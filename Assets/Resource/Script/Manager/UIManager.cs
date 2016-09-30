@@ -11,6 +11,9 @@ public class UIManager : MonoBehaviour
     public GameObject SkillDamage_Prefab = null;                  // Skill Damage Text Prefab
     public UISprite[] Players_HP = null;                                     // UI Player Hpbars ( 0 : Center  1 : Sub1    2 : Sub2 )
 
+    public GameObject Boss_UI = null;
+    public GameObject Boss_StateUI = null;
+
     private static UIManager instance = null;
 
     // Use this for initialization

@@ -89,9 +89,12 @@ public class WarriorAction : PlayerAction
             // Target과의 거리가 1.5f보다 멀면 Target이 있는 방향으로 이동한다.
             if (Distance(Target.transform.position, transform.position) > 1.5f)
             {
-                Set_Move();
-                Target_Move(Target.gameObject.transform.position);
-                yield return null;
+                if (state != STATE.SKILL)
+                {
+                    Set_Move();
+                    Target_Move(Target.gameObject.transform.position);
+                    yield return null;
+                }
             }
             // 3f보다 가까우면 공격한다.
             else

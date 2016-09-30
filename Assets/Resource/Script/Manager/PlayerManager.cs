@@ -309,11 +309,20 @@ public class PlayerManager : MonoBehaviour
         // Monster의 출현범위 안에 들어가면 Monster들을 활성화시키고 MonsterManager와 Player에게 Attack을 준비하는 함수를 호출한다.
         // state가 STATE.ATTACK으로 변한다.
         // Touch_Skill을 위해 PlayerManager의 Collider를 비활성화시킨다.
-        if(obj.gameObject.name == "Mob_Collision")
+        if(obj.gameObject.name.Equals("Mob_Collision"))
         {
             obj.gameObject.SetActive(true);
             MonsterManager.Get_Inctance().Ready_Attack(obj.gameObject);
             Set_Attack();
+            GetComponent<BoxCollider>().enabled = false;
+            state = STATE.ATTACK;
+        }
+
+        // 보스 몬스터를 만나면 실행된다.
+        if (obj.gameObject.name.Equals("Boss_Collision"))
+        {
+            obj.gameObject.SetActive(true);
+            MonsterManager.Get_Inctance().Ready_BossAttack(obj.gameObject);
             GetComponent<BoxCollider>().enabled = false;
             state = STATE.ATTACK;
         }

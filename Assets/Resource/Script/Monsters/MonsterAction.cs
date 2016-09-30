@@ -34,7 +34,6 @@ public class MonsterAction : MonoBehaviour {
 
     void Awake()
     {
-        Condition = transform.FindChild("Condition").gameObject;
         ani = GetComponent<Animator>();
     }
    

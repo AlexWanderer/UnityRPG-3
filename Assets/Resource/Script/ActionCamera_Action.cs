@@ -35,11 +35,13 @@ public class ActionCamera_Action : MonoBehaviour {
     }
 
     // type == Player에 따라서 Camera의 애니메이션을 실행시킨다.
-    public void Set_preparation(Transform Player, string type)
+    public void Set_preparation(Transform target, string type)
     {
 
-        Vector3 pos = Player.position;
+        Vector3 pos = target.position;
 
+
+        // Set Camera Position
         switch (type)
         {
             case "Warrior":
@@ -59,12 +61,12 @@ public class ActionCamera_Action : MonoBehaviour {
             case "Wizard2":
                 {
                     GameObject Camera = transform.FindChild("UpDownCamera").gameObject;
-                    Vector3 TargetPos = Player.GetComponent<PlayerAction>().Target.transform.position;
+                    Vector3 TargetPos = target.GetComponent<PlayerAction>().Target.transform.position;
                     TargetPos.y += 1f;
                     TargetPos.z -= 5f;
                     Camera.transform.position = TargetPos;
-                    Camera.transform.localRotation = Player.rotation;
-                    ani.SetTrigger(type);
+                    Camera.transform.localRotation = target.rotation;
+                    ani.SetTrigger("UpDown");
                     return;
                 }
 
@@ -74,11 +76,25 @@ public class ActionCamera_Action : MonoBehaviour {
                     pos.z += 12f;
                     break;
                 }
+
+            case "Boss":
+                {
+                    GameObject Camera = transform.FindChild("BossCamera").gameObject;
+                    Vector3 TargetPos = target.position;
+                    TargetPos.y += 1f;
+                    TargetPos.z -= 15f;
+                    transform.position = TargetPos;
+                    Camera.transform.localRotation = target.rotation;
+
+                    ani.SetTrigger("Boss");
+                    MainCamera.SetActive(false);
+                    return;
+                }
         }
 
+        ani.SetTrigger("ZoomIn");
         MainCamera.SetActive(false);
         transform.position = pos;
-        ani.SetTrigger(type);
     }
 
     public void Stop_Animation()

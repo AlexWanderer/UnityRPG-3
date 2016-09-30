@@ -69,8 +69,8 @@ public class HpbarAction : MonoBehaviour {
             p = this.transform.localPosition;
             // RoundToInt(value) == value값과 가까운 정수를 반환한다.
             p.x = Mathf.RoundToInt(p.x);
-            //실제 오브젝트보다 Hpbar가 위에 있어야하기때문에 120f의 값을 추가한다.
-            p.y = Mathf.RoundToInt(p.y) + 120f;
+            //실제 오브젝트보다 Hpbar가 위에 있어야하기때문에 y값을 추가한다.
+            p.y = Mathf.RoundToInt(p.y) + 200f;
             p.z = 0f;
             this.transform.localPosition = p;
 

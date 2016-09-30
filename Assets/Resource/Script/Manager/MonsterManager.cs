@@ -63,6 +63,28 @@ public class MonsterManager : MonoBehaviour {
         }
     }
 
+    public void Ready_BossAttack(GameObject Monster_Group)
+    {
+        Monster_Group.GetComponent<BoxCollider>().enabled = false;
+
+        GameObject Boss = Monster_Group.transform.GetChild(0).gameObject;
+
+        // 만약 자식오브젝트가 Monster가 아니라면 continue한다.
+        if (Boss.CompareTag("Monster") == false)
+        {
+            return;
+        }
+
+        MonsterAction monster_action = Boss.GetComponent<MonsterAction>();
+
+        GameManager.Get_Inctance().Set_Boss();
+
+
+        Boss.SetActive(true);
+        Monsters.Add(Boss);
+    }
+
+
     public void Set_Idle()
     {
         for (int i = 0; i < Monsters.Count; i++)

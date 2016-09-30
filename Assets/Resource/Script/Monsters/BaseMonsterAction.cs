@@ -2,7 +2,7 @@
 using System.Collections;
 
 // MikuNegi Monster의 스크립트.
-public class MikuNegiAction : MonsterAction {
+public class BaseMonsterAction : MonsterAction {
 
     void OnEnable()
     {
