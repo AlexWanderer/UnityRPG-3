@@ -196,6 +196,22 @@ public class WarriorAction : PlayerAction
 
     }
 
+    public override void Set_Poison()
+    {
+        StartCoroutine(C_Poison());
+    }
+    IEnumerator C_Poison()
+    {
+        for (int i = 0; i < 5; i++)
+        {
+            Set_Demage(1f, null);
+
+            yield return new WaitForSeconds(1f);
+        }
+
+        yield break;
+    }
+
     // Target이 있는쪽으로 이동하는 함수.
     public override void Target_Move(Vector3 target)
     {

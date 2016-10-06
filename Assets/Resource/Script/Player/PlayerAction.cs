@@ -61,6 +61,11 @@ public class PlayerAction : MonoBehaviour
 
     }
 
+    public virtual void Set_Poison()
+    {
+    }
+   
+
     //  Player의 InitHp를 반환하는 함수.
     public float Get_InitHP() { return InitHP; }
     public void Off_Active() { gameObject.SetActive(false); }

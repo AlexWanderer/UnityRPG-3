@@ -191,6 +191,20 @@ public class PlayerManager : MonoBehaviour
 
     }
 
+    public GameObject Get_RandomPlayer()
+    {
+        if (Characters.Length == 0) { return null; }
+
+        int rand = 0;
+
+        do
+        {
+            rand = Random.Range(0, Characters.Length);
+
+        } while (Characters[rand].activeSelf == false || Characters[rand] == null);
+
+        return Characters[rand];
+    }
     // Player의 Target이 null이거나 active가 false면 MonsterManager에서 ReTarget함수를 실행시킨다. 
     public void Check_Target()
     {

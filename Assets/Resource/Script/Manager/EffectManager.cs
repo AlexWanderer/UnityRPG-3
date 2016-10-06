@@ -5,6 +5,7 @@ using System.Collections;
 public class EffectManager : MonoBehaviour {
 
     public GameObject Charm_Effect = null;
+    public GameObject Poison_Effect = null;
 
 
 

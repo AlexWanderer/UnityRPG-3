@@ -11,6 +11,8 @@ public class UIManager : MonoBehaviour
     public GameObject SkillDamage_Prefab = null;                  // Skill Damage Text Prefab
     public UISprite[] Players_HP = null;                                     // UI Player Hpbars ( 0 : Center  1 : Sub1    2 : Sub2 )
 
+    public GameObject Mark_Prefab = null;
+
     public GameObject Boss_UI = null;
     public GameObject Boss_StateUI = null;
 
@@ -109,5 +111,18 @@ public class UIManager : MonoBehaviour
         HealText.transform.localPosition = Vector3.zero;
 
         HealText.GetComponent<HealAction>().Set_Active(target, damage);
+    }
+
+    public GameObject Set_Mark(GameObject target)
+    {
+        GameObject mark = Instantiate(Mark_Prefab, Vector3.zero, Quaternion.identity) as GameObject;
+        mark.transform.parent = GameObject.Find("UI Root").transform;
+        mark.transform.localScale = Vector3.one;
+        mark.transform.localPosition = Vector3.zero;
+
+        mark.GetComponent<MarkAction>().Target = target;
+        mark.GetComponent<MarkAction>().Start_Update();
+
+        return mark;
     }
 }

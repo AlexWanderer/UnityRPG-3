@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class BossKinokoAction: MonsterAction {
+public class BossKinokoAction : MonsterAction {
 
     public GameObject LongAttack_Effect = null;
     public GameObject LongAttack_Position = null;
@@ -12,7 +12,7 @@ public class BossKinokoAction: MonsterAction {
         ani = GetComponent<Animator>();
     }
     public override void Set_Idle()
-    { 
+    {
         StopAllCoroutines();
         state = STATE.IDLE;
         ani.SetTrigger("Idle");
@@ -72,31 +72,60 @@ public class BossKinokoAction: MonsterAction {
     // 공격하는 Coroutine.
     IEnumerator CSet_Attack()
     {
+        StartCoroutine(C_LongAttack());
+
         while (true)
         {
             if (state != STATE.ATTACK)
             {
+                yield return null;
                 continue;
             }
 
-            if (Target == null || Target.activeSelf == false)
+            if (Target == null)
             {
-                PlayerManager.Get_Inctance().Set_ReTarget(this);
+                yield return null;
+                continue;
+            }
+
+            if (Target.activeSelf == false)
+            {
+                Target = null;
             }
 
             if(Input.GetKeyDown(KeyCode.Q))
             {
-                GameObject LongAttack = Instantiate(LongAttack_Effect, LongAttack_Position.transform.position, Quaternion.identity) as GameObject;
-                LongAttack.name = "Kinoko_LongAttack";
-
+                Debuff_poison();
             }
-           
+
             ani.SetBool("Attack", true);
 
 
             yield return null;
         }
     }
+    IEnumerator C_LongAttack()
+    {
+        while (true)
+        {
+            float random = Random.Range(0, 100);
+
+            if (Target == null)
+            {
+                random = 0;
+            }
+
+            if (random < 20)
+            {
+                ani.SetTrigger("LongAttack");
+                ani.SetTrigger("Idle");
+                yield return new WaitForSeconds(1f);
+                continue;
+            }
+            yield return new WaitForSeconds(0.5f);
+        }
+    }
+
 
     public void Player_Attack()
     {
@@ -105,7 +134,18 @@ public class BossKinokoAction: MonsterAction {
 
     public void Long_Attack()
     {
+        GameObject LongAttack = Instantiate(LongAttack_Effect, LongAttack_Position.transform.position, Quaternion.identity) as GameObject;
+        LongAttack.name = "Kinoko_LongAttack";
+    }
 
+    public void Debuff_poison()
+    {
+        GameObject Target = PlayerManager.Get_Inctance().Get_RandomPlayer();
+        Target.GetComponent<PlayerAction>().Set_Poison();
+
+        GameObject Effectc = Instantiate(EffectManager.Get_Inctance().Poison_Effect, Vector3.zero, Quaternion.identity) as GameObject;
+        Effectc.name = "PoisonEffect";
+        Effectc.transform.position = Target.transform.position;
     }
 
     void OnCollisionEnter(Collision obj)
