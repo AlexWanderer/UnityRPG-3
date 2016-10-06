@@ -51,8 +51,9 @@ public class GameManager : MonoBehaviour {
 	    switch(GMstate)
         {
             case GMSTATE.IDLE:
-                break;
-
+                {
+                    break;
+                }
             case GMSTATE.NEXT:
                 {
                     // 다음 장소로 가기 위해 Player들을 전부 대기상태로 한번 만들고 이동한다.
@@ -64,8 +65,10 @@ public class GameManager : MonoBehaviour {
 
             case GMSTATE.BOSS:
                 {
+                    
                     PlayerManager.Get_Inctance().Set_Idle();
                     MonsterManager.Get_Inctance().Set_Idle();
+                    GMstate = GMSTATE.IDLE;
                     break;
                 }
         }

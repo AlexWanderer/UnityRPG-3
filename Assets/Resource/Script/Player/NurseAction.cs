@@ -25,6 +25,7 @@ public class NurseAction : PlayerAction {
     }
     public override void Set_Attack()
     {
+        state = STATE.ATTACK;
         ani.SetBool("Attack", true);
     }
     public override void Set_Idle()

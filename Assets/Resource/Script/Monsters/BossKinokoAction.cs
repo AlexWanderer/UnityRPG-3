@@ -3,19 +3,25 @@ using System.Collections;
 
 public class BossKinokoAction: MonsterAction {
 
-    void OnEnable()
+    public GameObject LongAttack_Effect = null;
+    public GameObject LongAttack_Position = null;
+
+    void Awake()
     {
         ActionCamera_Action.Get_Inctance().Set_preparation(transform, "Boss");
+        ani = GetComponent<Animator>();
     }
-
     public override void Set_Idle()
-    {
+    { 
         StopAllCoroutines();
         state = STATE.IDLE;
         ani.SetTrigger("Idle");
     }
     public override void Set_Dead()
     {
+        if (state == STATE.DEAD)
+            return;
+
         state = STATE.DEAD;
         StopAllCoroutines();
         MonsterManager.Get_Inctance().Check_Dead(gameObject);
@@ -38,6 +44,9 @@ public class BossKinokoAction: MonsterAction {
     }
     public override bool Set_Demage(float AttackDamage, string type)
     {
+        if (state == STATE.DEAD)
+            return false;
+
         Hp -= AttackDamage;
         UIManager.Get_Inctance().Set_Damage(gameObject, AttackDamage, type);
 
@@ -75,21 +84,14 @@ public class BossKinokoAction: MonsterAction {
                 PlayerManager.Get_Inctance().Set_ReTarget(this);
             }
 
-            // Target이 있는쪽을 바라본다.
-            Vector3 targetPos = Target.transform.position;
-            targetPos.y = transform.position.y;
-            Vector3 v = targetPos - transform.position;
-            transform.rotation = Quaternion.LookRotation(v);
+            if(Input.GetKeyDown(KeyCode.Q))
+            {
+                GameObject LongAttack = Instantiate(LongAttack_Effect, LongAttack_Position.transform.position, Quaternion.identity) as GameObject;
+                LongAttack.name = "Kinoko_LongAttack";
 
-            // Target과의 거리가 1.5f이상이면 가만히 있고 아니면 공격한다.
-            if (Distance(Target.transform.position, transform.position) > 1.5f)
-            {
-                ani.SetBool("Attack", false);
             }
-            else
-            {
-                ani.SetBool("Attack", true);
-            }
+           
+            ani.SetBool("Attack", true);
 
 
             yield return null;
@@ -101,11 +103,15 @@ public class BossKinokoAction: MonsterAction {
         Target.GetComponent<PlayerAction>().Set_Demage(Attack, null);
     }
 
+    public void Long_Attack()
+    {
 
-    void OnTriggerEnter(Collider obj)
+    }
+
+    void OnCollisionEnter(Collision obj)
     {
         // Player랑 충돌하면 Target을 충돌한 Player로 변경한다.
-        if (obj.CompareTag("Player"))
+        if (obj.gameObject.CompareTag("Player"))
         {
             Target = obj.gameObject;
         }

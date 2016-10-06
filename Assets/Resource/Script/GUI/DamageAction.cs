@@ -23,7 +23,7 @@ public class DamageAction : MonoBehaviour {
             p.z = 0f;
             transform.localPosition = p;
         }
-        catch { return; }
+        catch { gameObject.SetActive(false); return; }
         //Damage Text의 text를 damage값으로 설정한다.
         GetComponentInChildren<UILabel>().text = ((int)value).ToString();
 

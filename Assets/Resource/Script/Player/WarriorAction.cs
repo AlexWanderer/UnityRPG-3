@@ -10,6 +10,9 @@ public class WarriorAction : PlayerAction
     public GameObject TouchAttack_Pos = null;                                       // 터치 공격시 Effect의 위치
     public GameObject SpecialSkill_Effect = null;                                       // 스페셜 스킬 Effect
 
+    public float distance = 1.5f;
+    public bool check_move = true;
+
     void Awake()
     {
 
@@ -77,6 +80,7 @@ public class WarriorAction : PlayerAction
             // Target이 null이거나 죽어있는 MonsterManager에게 새로운 Target을 받아온다.
             if (Target == null || Target.state.ToString().Equals("DEAD"))
             {
+                check_move = true;
                 MonsterManager.Get_Inctance().Set_ReTarget(this);
             }
 
@@ -87,7 +91,7 @@ public class WarriorAction : PlayerAction
             transform.rotation = Quaternion.LookRotation(v);
 
             // Target과의 거리가 1.5f보다 멀면 Target이 있는 방향으로 이동한다.
-            if (Distance(Target.transform.position, transform.position) > 1.5f)
+            if (check_move)
             {
                 if (state != STATE.SKILL)
                 {
@@ -179,6 +183,7 @@ public class WarriorAction : PlayerAction
 
         Vector3 pos = TouchAttack_Pos.transform.position;
         pos.z += 2f;
+        pos.y += 1f;
 
         Effect.transform.position = pos;
 
@@ -203,5 +208,14 @@ public class WarriorAction : PlayerAction
     float Distance(Vector3 Target, Vector3 Player)
     {
         return Mathf.Abs(Vector3.Distance(Target, Player));
+    }
+
+    void OnCollisionEnter(Collision obj)
+    {
+        if(obj.gameObject.CompareTag("Monster"))
+        {
+            Target = obj.gameObject.GetComponent<MonsterAction>();
+            check_move = false;
+        }
     }
 }

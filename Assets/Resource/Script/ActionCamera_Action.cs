@@ -119,4 +119,17 @@ public class ActionCamera_Action : MonoBehaviour {
         }
         ani.SetTrigger("Idle");
     }
+    IEnumerator C_CameraIdle()
+    {
+        ani.speed = 0f;
+        yield return new WaitForSeconds(0.5f);
+        ani.speed = 0.5f;
+
+        yield return new WaitForSeconds(0.2f);
+
+        ani.speed = 1f;
+        CameraOff();
+        PlayerManager.Get_Inctance().Set_Attack();
+        MonsterManager.Get_Inctance().Start_BossAttack();
+    }
 }

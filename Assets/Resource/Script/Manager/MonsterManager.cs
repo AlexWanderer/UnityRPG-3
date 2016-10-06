@@ -75,8 +75,6 @@ public class MonsterManager : MonoBehaviour {
             return;
         }
 
-        MonsterAction monster_action = Boss.GetComponent<MonsterAction>();
-
         GameManager.Get_Inctance().Set_Boss();
 
 
@@ -84,6 +82,10 @@ public class MonsterManager : MonoBehaviour {
         Monsters.Add(Boss);
     }
 
+    public void Start_BossAttack()
+    {
+        Monsters[0].GetComponent<MonsterAction>().StartSet_Attack();
+    }
 
     public void Set_Idle()
     {

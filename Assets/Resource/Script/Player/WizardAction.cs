@@ -11,6 +11,7 @@ public class WizardAction : PlayerAction
     public GameObject SpecialSkill_Effect = null;                      // SpecialAttack Effect obj
     public GameObject Attack_Pos = null;                                 // Effect 좌표
 
+
     void Awake()
     {
         ani = GetComponent<Animator>();

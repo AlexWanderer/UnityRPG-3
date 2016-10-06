@@ -15,7 +15,9 @@ public class PlayerManager : MonoBehaviour
     public STATE state = STATE.IDLE;
     // Player의 Character가 들어갈 배열이다.
     // 0 = Center       1 = Sub1          2 = Sub2
-    public GameObject[] Characters = new GameObject[3];     
+    public GameObject[] Characters = new GameObject[3];
+
+    public GameObject LongAttackPoint = null; 
 
     private static PlayerManager instance = null;
 
@@ -108,6 +110,8 @@ public class PlayerManager : MonoBehaviour
     // Character의 Target을 설정해주고 Attack함수를 호출한다.
     public void Set_Attack()
     {
+        state = STATE.ATTACK;
+
         for (int i = 0; i < Characters.Length; i++)
         {
             if (Characters[i] == null)
@@ -118,13 +122,8 @@ public class PlayerManager : MonoBehaviour
 
             PlayerAction Player = Characters[i].GetComponent<PlayerAction>();
 
-            // 만약 Monster가 null이면 다른 Monster를 Target으로 지정한다.
-            if (MonsterManager.Get_Inctance().Monsters[i] == null)
-            {
-                MonsterManager.Get_Inctance().Set_ReTarget(Player);
-            }
+            MonsterManager.Get_Inctance().Set_ReTarget(Player);
 
-            Player.Target = MonsterManager.Get_Inctance().Monsters[i].GetComponent<MonsterAction>();
             Player.Set_Attack();
         }
     }

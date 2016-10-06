@@ -112,10 +112,10 @@ public class BaseMonsterAction : MonsterAction {
     }
 
  
-    void OnTriggerEnter(Collider obj)
+    void OnCollisionEnter(Collision obj)
     {
         // Player랑 충돌하면 Target을 충돌한 Player로 변경한다.
-        if(obj.CompareTag("Player"))
+        if(obj.gameObject.CompareTag("Player"))
         {
             Target = obj.gameObject;
         }
