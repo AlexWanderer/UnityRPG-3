@@ -90,7 +90,6 @@ public class WarriorAction : PlayerAction
             Vector3 v = target - transform.position;
             transform.rotation = Quaternion.LookRotation(v);
 
-            // Target과의 거리가 1.5f보다 멀면 Target이 있는 방향으로 이동한다.
             if (check_move)
             {
                 if (state != STATE.SKILL)
@@ -182,8 +181,7 @@ public class WarriorAction : PlayerAction
         GameObject Effect = Instantiate(SpecialSkill_Effect, Vector3.zero, Quaternion.identity) as GameObject;
 
         Vector3 pos = TouchAttack_Pos.transform.position;
-        pos.z += 2f;
-        pos.y += 1f;
+        pos.y = 1f;
 
         Effect.transform.position = pos;
 
@@ -199,6 +197,7 @@ public class WarriorAction : PlayerAction
     public override void Set_Poison()
     {
         StartCoroutine(C_Poison());
+        UIManager.Get_Inctance().Set_PlayerState(transform.parent.name, "Poison", 5f);
     }
     IEnumerator C_Poison()
     {

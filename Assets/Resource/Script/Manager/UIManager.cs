@@ -10,11 +10,16 @@ public class UIManager : MonoBehaviour
     public GameObject Heal_Prefab = null;                               // Heal Text Prefab
     public GameObject SkillDamage_Prefab = null;                  // Skill Damage Text Prefab
     public UISprite[] Players_HP = null;                                     // UI Player Hpbars ( 0 : Center  1 : Sub1    2 : Sub2 )
+    public GameObject[] Player_State = null;
+
+    public GameObject Boss_HP = null;
 
     public GameObject Mark_Prefab = null;
 
     public GameObject Boss_UI = null;
     public GameObject Boss_StateUI = null;
+
+    
 
     private static UIManager instance = null;
 
@@ -72,6 +77,13 @@ public class UIManager : MonoBehaviour
         Players_HP[type].fillAmount = value;
     }
 
+    public void Set_BossHp(string name, GameObject target)
+    {
+        Boss_HP.GetComponent<BossHpAction>().name = name;
+        Boss_HP.GetComponent<BossHpAction>().Target = target;
+        Boss_HP.SetActive(true);
+    }
+
     // Target의 위치에 Hpbar를 만드는 함수.
     public void Set_Hpbar(GameObject target)
     {
@@ -111,6 +123,37 @@ public class UIManager : MonoBehaviour
         HealText.transform.localPosition = Vector3.zero;
 
         HealText.GetComponent<HealAction>().Set_Active(target, damage);
+    }
+
+    public void Set_PlayerState(string TargetName, string Symptom, float time)
+    {
+        int index = -1;
+
+        switch(TargetName)
+        {
+            case "Center":
+                {
+                    index = 0;
+                    break;
+                }
+            case "Sub1":
+                {
+                    index = 1;
+                    break;
+                }
+            case "Sub2":
+                {
+                    index = 2;
+                    break;
+                }
+        }
+
+        if (index == -1)
+            return;
+
+        GameObject state = Player_State[index].transform.FindChild(Symptom).gameObject;
+        state.GetComponent<StateAction>().Start_Update(time);
+
     }
 
     public GameObject Set_Mark(GameObject target)

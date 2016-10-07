@@ -31,6 +31,8 @@ public class BossKinokoAction : MonsterAction {
     {
         state = STATE.ATTACK;
 
+        UIManager.Get_Inctance().Set_BossHp("버섯돌이", gameObject);
+
         // 만약 CSet_Attack이 실행중인데 Start를 하게되면 Error가 난다. 
         try
         {
@@ -93,11 +95,6 @@ public class BossKinokoAction : MonsterAction {
                 Target = null;
             }
 
-            if(Input.GetKeyDown(KeyCode.Q))
-            {
-                Debuff_poison();
-            }
-
             ani.SetBool("Attack", true);
 
 
@@ -122,6 +119,14 @@ public class BossKinokoAction : MonsterAction {
                 yield return new WaitForSeconds(1f);
                 continue;
             }
+
+           else if(random < 30)
+            {
+                Debuff_poison();
+                yield return new WaitForSeconds(1f);
+                continue;
+            }
+
             yield return new WaitForSeconds(0.5f);
         }
     }

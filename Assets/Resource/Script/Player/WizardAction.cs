@@ -234,6 +234,7 @@ public class WizardAction : PlayerAction
     public override void Set_Poison()
     {
         StartCoroutine(C_Poison());
+        UIManager.Get_Inctance().Set_PlayerState(transform.parent.name, "Poison", 5f);
     }
     IEnumerator C_Poison()
     {

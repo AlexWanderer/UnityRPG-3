@@ -11,19 +11,15 @@ public class DamageAction : MonoBehaviour {
             return;
 
         //Damage Text의 위치를 조정한다. 
-        try
-        {
-            Vector3 p = Camera.main.WorldToViewportPoint(target.transform.position);
+        Vector3 p = Camera.main.WorldToViewportPoint(target.transform.position);
+        transform.position = UICamera.mainCamera.ViewportToWorldPoint(p);
 
-            transform.position = UICamera.mainCamera.ViewportToWorldPoint(p);
+        p = transform.localPosition;
+        p.x = Mathf.RoundToInt(p.x);
+        p.y = Mathf.RoundToInt(p.y) + 80f;
+        p.z = 0f;
+        transform.localPosition = p;
 
-            p = transform.localPosition;
-            p.x = Mathf.RoundToInt(p.x);
-            p.y = Mathf.RoundToInt(p.y) + 30f;
-            p.z = 0f;
-            transform.localPosition = p;
-        }
-        catch { gameObject.SetActive(false); return; }
         //Damage Text의 text를 damage값으로 설정한다.
         GetComponentInChildren<UILabel>().text = ((int)value).ToString();
 

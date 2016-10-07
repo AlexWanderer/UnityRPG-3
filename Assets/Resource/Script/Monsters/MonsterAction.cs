@@ -20,9 +20,9 @@ public class MonsterAction : MonoBehaviour {
 
 
 
-    protected const float initHP = 10f;                        // MAX HP ( 정적 )
+    protected const float initHP = 500f;                        // MAX HP ( 정적 )
     const float initAttack = 1f;                                    // MAX ATTACK ( 정적 )
-    public float Hp = 10f;                                           // 현재 HP
+    public float Hp = 500f;                                           // 현재 HP
     public float Attack = 1f;                                       // 현재 ATTACK
         
     public STATE state = STATE.IDLE;                        // 상태
