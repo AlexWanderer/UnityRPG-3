@@ -3,12 +3,13 @@ using System.Collections;
 
 public class StateAction : MonoBehaviour {
 
-    public float LimitTime = -1f;
+   public float LimitTime = -1f;
    public float Timer = 0f;
    public bool type = false;
-    UIPanel Icon = null;
+   GameObject Icon = null;
+    UIGrid grid = null;
 
-   public void Start_Update(float time)
+   public void Start_Update(float time, string Symptom)
     {
         if(LimitTime != -1f)
         {
@@ -18,14 +19,17 @@ public class StateAction : MonoBehaviour {
             return;
         }
 
-        Icon = GetComponent<UIPanel>();
+        Icon = transform.FindChild(Symptom).gameObject;
+        grid = GetComponent<UIGrid>();
 
         if(Icon == null) { return; }
 
         LimitTime = time;
         Timer = LimitTime;
 
-        Icon.alpha = 1;
+        Icon.SetActive(true);
+        grid.Reposition();
+        
         StartCoroutine(C_Update());
         StartCoroutine(C_Flickering());
     }
@@ -44,7 +48,8 @@ public class StateAction : MonoBehaviour {
             if (Timer < 0)
             {
                 type = false;
-                Icon.alpha = 0;
+                Icon.SetActive(false);
+                grid.Reposition();
                 LimitTime = -1f;
                 Timer = 0f;
                 StopAllCoroutines();
@@ -59,13 +64,13 @@ public class StateAction : MonoBehaviour {
         {
             if (type == false)
             {
-                Icon.alpha = 1;
+                Icon.SetActive(true);
             }
             else
             {
-                Icon.alpha = 0;
+                Icon.SetActive(false);
                 yield return new WaitForSeconds(0.1f);
-                Icon.alpha = 1;
+                Icon.SetActive(true);
                 yield return new WaitForSeconds(0.1f);
             }
 

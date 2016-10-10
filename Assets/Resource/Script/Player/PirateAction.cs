@@ -1,12 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-// 마법사인 Wizard의 스크립트.
-public class WizardAction : PlayerAction
-{
+public class PirateAction : PlayerAction {
 
-    public GameObject Attack_Prefab = null;                             // Attack Effect prefab
-    GameObject AttackOBJ = null;                                             // Attack Effect obj
     public GameObject TouchAttack_Effect = null;                    // TouchAttack Effect obj
     public GameObject SpecialSkill_Effect = null;                      // SpecialAttack Effect obj
     public GameObject Attack_Pos = null;                                 // Effect 좌표
@@ -65,91 +61,53 @@ public class WizardAction : PlayerAction
         return true;
     }
 
-    public void Set_TouchSkill_Effect()
+    public void Start_Attack()
     {
-        Vector3 target = Target.transform.position;
-        target.y = transform.position.y;
-        Vector3 v = target - transform.position;
-
-        GameObject Effect = Instantiate(TouchAttack_Effect, Vector3.zero, Quaternion.LookRotation(v)) as GameObject;
-        Vector3 pos = Attack_Pos.transform.position;
-        pos.y = 0.15f;
-        Effect.transform.position = pos;
-        Target.Set_Demage(10f, null);
-
+        StartCoroutine(C_Attack());
     }
-
-    public void Start_MagicAttack()
+    IEnumerator C_Attack()
     {
-        StartCoroutine(C_MagicAttack());
-    }
-    IEnumerator C_MagicAttack()
-    {
-        if (state != STATE.ATTACK)
-            yield break;
-
-        // Target이 null이거나 죽어있으면 새로운 Target을 받는다.
-        if (Target == null || Target.state.ToString().Equals("DEAD"))
+        while (true)
         {
-            MonsterManager.Get_Inctance().Set_ReTarget(this);
-        }
+            // 상태가 Attack이 아닌경우 코루틴을 종료한다.
+            if (state != STATE.ATTACK)
+                yield break;
 
-        // AttackEffect obj가 활성화되있지 않으면 (첫공격) AttackEffect를 생성한다.
-        if (AttackOBJ == null)
-        {
-            AttackOBJ = Instantiate(Attack_Prefab).gameObject;
-            AttackOBJ.SetActive(false);
-            AttackOBJ.name = "WizardAttack";
-            AttackOBJ.transform.parent = null;
-        }
-
-        // Player와 AttackEffect를 Target이 있는곳으로 바라보게 만든다.
-        Vector3 target = Target.transform.position;
-        target.y = transform.position.y;
-        Vector3 v = target - transform.position;
-        transform.rotation = Quaternion.LookRotation(v);
-        AttackOBJ.transform.rotation = Quaternion.LookRotation(v);
-
-        // Effect를 공격좌표가 있는곳에 둔다.
-        AttackOBJ.transform.position = Attack_Pos.transform.position;
-        // AttackEffect가 Active된 순간 Effect안에 있는 스크립트가 작동한다.
-        AttackOBJ.SetActive(true);
-
-        // Effect가 Target에게 도달할때까지 ani를 0.2배속으로 만들고 timer를 만든다.
-        ani.speed = 0.2f;
-        float timer = 0f;
-        
-        // Effect가 Target에게 도달할때까지 실행된다.
-        while(true)
-        {
-            timer += Time.deltaTime; 
-
-            // Effect와 Target의 거리가 0.5f 미만이면 ani를 원래 상태로 돌리고 코루틴을 종료한다.
-            if(Distance(AttackOBJ.transform.position, Target.transform.position) < 0.5f )
+            // Target이 null이거나 죽어있는 MonsterManager에게 새로운 Target을 받아온다.
+            if (Target == null || Target.state.ToString().Equals("DEAD"))
             {
-                ani.speed = 1f;
-                break;
+                MonsterManager.Get_Inctance().Set_ReTarget(this);
             }
 
-            // 만약 timer가 5f를 넘었을경우 (안맞고 계속 직진)  ani를 원래 상태로 돌리고 Effect를 비활성화한 후 코루틴을 종료한다.
-            if (timer > 5f)
+            // Target이 있는 쪽을 바라본다.
+            Vector3 target = Target.transform.position;
+            target.y = transform.position.y;
+            Vector3 v = target - transform.position;
+            transform.rotation = Quaternion.LookRotation(v);
+
+            if (Distance(target, transform.position) > 10f)
             {
-                ani.speed = 1f;
-                AttackOBJ.SetActive(false);
-                yield break;
+                if (state != STATE.SKILL)
+                {
+                    Set_Move();
+                    Target_Move(Target.gameObject.transform.position);
+                    yield return null;
+                }
+            }
+            else
+            {
+                ani.SetBool("Attack", true);
             }
 
             yield return null;
 
         }
-
-        // while문을 빠져나오면 Effect가 Target에 도달한것이니 Effect를 비활성화시키고 Target에게 데미지를 준다.
-        AttackOBJ.SetActive(false);
-        Target.Set_Demage(Attack, null);
-        AttackOBJ.transform.position = Attack_Pos.transform.position;
-
-        yield break;
     }
+    public void Monster_Attack()
+    {
+        Target.Set_Demage(Attack, null);
+    }
+
 
     public override void Special_Skill()
     {
@@ -165,7 +123,7 @@ public class WizardAction : PlayerAction
     }
     IEnumerator C_Special_Skill()
     {
-       
+
 
         // Target이 죽었을시 새로운 Target을 받는다.
         if (Target.gameObject.activeSelf == false)
@@ -256,6 +214,5 @@ public class WizardAction : PlayerAction
     {
         return Mathf.Abs(Vector3.Distance(Target, Player));
     }
+
 }
-
-

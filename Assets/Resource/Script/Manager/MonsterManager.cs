@@ -136,6 +136,24 @@ public class MonsterManager : MonoBehaviour {
         }
     }
 
+    public void Set_ParticularTarget(GameObject Player)
+    {
+        for (int i = 0; i < Monsters.Count; i++)
+        {
+            if (Monsters[i] == null)
+            {
+                continue;
+            }
+
+            if (Player == null || Player.activeSelf == false)
+            {
+                return;
+            }
+
+                Monsters[i].GetComponent<MonsterAction>().Target = Player;
+        }
+    }
+
     // Monster의 Target이 null이거나 active가 false면 PlayerManager에서 ReTarget함수를 실행시킨다. 
     public void Check_Target()
     {

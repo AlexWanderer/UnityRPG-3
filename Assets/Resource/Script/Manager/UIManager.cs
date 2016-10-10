@@ -151,9 +151,7 @@ public class UIManager : MonoBehaviour
         if (index == -1)
             return;
 
-        GameObject state = Player_State[index].transform.FindChild(Symptom).gameObject;
-        state.GetComponent<StateAction>().Start_Update(time);
-
+        Player_State[index].GetComponent<StateAction>().Start_Update(time, Symptom);
     }
 
     public GameObject Set_Mark(GameObject target)

@@ -99,7 +99,6 @@ public class WarriorAction : PlayerAction
                     yield return null;
                 }
             }
-            // 3f보다 가까우면 공격한다.
             else
             {
                 ani.SetBool("Attack", true);
@@ -170,6 +169,7 @@ public class WarriorAction : PlayerAction
 
         // Player들을 Attack상태로 바꾼다. ( Active 변환 때문.)
         PlayerManager.Get_Inctance().Set_Attack();
+        Target.StartSet_Attack();
 
 
         yield break;
