@@ -1,42 +1,34 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class StateAction : MonoBehaviour {
+public class StateIconAction : MonoBehaviour {
 
-   public float LimitTime = -1f;
-   public float Timer = 0f;
-   public bool type = false;
-   GameObject Icon = null;
-    UIGrid grid = null;
+    public float LimitTime = -1f;
+    public float Timer = 0f;
+    public bool type = false;
+    public UIGrid grid = null;
+    UISprite Icon = null;
 
-   public void Start_Update(float time, string Symptom)
+    public void Start_Icon(float time, UIGrid ParentGrid)
     {
-        if(LimitTime != -1f)
-        {
-            LimitTime = time;
-            Timer = LimitTime;
-            type = false;
-            return;
-        }
-
-        Icon = transform.FindChild(Symptom).gameObject;
-        grid = GetComponent<UIGrid>();
-
-        if(Icon == null) { return; }
+        grid = ParentGrid;
+        Icon = GetComponent<UISprite>();
 
         LimitTime = time;
         Timer = LimitTime;
+        type = false;
+        gameObject.SetActive(true);
+        grid.repositionNow = true;
 
-        Icon.SetActive(true);
-        grid.Reposition();
-        
         StartCoroutine(C_Update());
         StartCoroutine(C_Flickering());
+
+        
     }
 
     IEnumerator C_Update()
     {
-        while(true)
+        while (true)
         {
             Timer -= Time.deltaTime;
 
@@ -48,8 +40,8 @@ public class StateAction : MonoBehaviour {
             if (Timer < 0)
             {
                 type = false;
-                Icon.SetActive(false);
-                grid.Reposition();
+                gameObject.SetActive(false);
+                grid.repositionNow = true;
                 LimitTime = -1f;
                 Timer = 0f;
                 StopAllCoroutines();
@@ -64,13 +56,13 @@ public class StateAction : MonoBehaviour {
         {
             if (type == false)
             {
-                Icon.SetActive(true);
+                Icon.enabled = true;
             }
             else
             {
-                Icon.SetActive(false);
+                Icon.enabled = false;
                 yield return new WaitForSeconds(0.1f);
-                Icon.SetActive(true);
+                Icon.enabled = true;
                 yield return new WaitForSeconds(0.1f);
             }
 

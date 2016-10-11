@@ -73,8 +73,9 @@ public class BaseMonsterAction : MonsterAction {
     {
         while (true)
         {
-            if (state != STATE.ATTACK)
+            if (state != STATE.ATTACK && state != STATE.PROVOCATION)
             {
+                yield return null;
                 continue;
             }
 
@@ -111,12 +112,18 @@ public class BaseMonsterAction : MonsterAction {
         Target.GetComponent<PlayerAction>().Set_Demage(Attack, null);
     }
 
- 
+
+
     void OnCollisionEnter(Collision obj)
     {
         // Player랑 충돌하면 Target을 충돌한 Player로 변경한다.
         if(obj.gameObject.CompareTag("Player"))
         {
+            if(state == STATE.PROVOCATION)
+            {
+                return;
+            }
+
             Target = obj.gameObject;
         }
     }

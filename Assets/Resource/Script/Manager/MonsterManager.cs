@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class MonsterManager : MonoBehaviour {
+    
 
     // Scene에 출연한 Monster를 담고있는 List
     public List<GameObject> Monsters = new List<GameObject>();
@@ -136,7 +137,7 @@ public class MonsterManager : MonoBehaviour {
         }
     }
 
-    public void Set_ParticularTarget(GameObject Player)
+    public void Set_ParticularTarget(GameObject Player, float Time)
     {
         for (int i = 0; i < Monsters.Count; i++)
         {
@@ -150,8 +151,11 @@ public class MonsterManager : MonoBehaviour {
                 return;
             }
 
-                Monsters[i].GetComponent<MonsterAction>().Target = Player;
+            Monsters[i].GetComponent<MonsterAction>().Target = Player;
+            Monsters[i].GetComponent<MonsterAction>().Set_StateProvocation();
         }
+
+        Invoke("Check_Target", Time);
     }
 
     // Monster의 Target이 null이거나 active가 false면 PlayerManager에서 ReTarget함수를 실행시킨다. 
@@ -165,9 +169,21 @@ public class MonsterManager : MonoBehaviour {
             }
 
             MonsterAction Monster = Monsters[i].GetComponent<MonsterAction>();
-            if (Monster.Target == null || Monster.Target.gameObject.activeSelf == false)
+
+            if (Monster.Check_StateProvocation())
             {
                 PlayerManager.Get_Inctance().Set_ReTarget(Monster);
+                Monster.Set_StateAttack();
+               
+                return;
+            }
+            else
+            {   
+                if (Monster.Target == null || Monster.Target.gameObject.activeSelf == false)
+                {
+                    PlayerManager.Get_Inctance().Set_ReTarget(Monster);
+                    return;
+                }
             }
         }
     }

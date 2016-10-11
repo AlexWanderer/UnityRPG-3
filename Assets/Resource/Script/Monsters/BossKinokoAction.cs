@@ -158,6 +158,11 @@ public class BossKinokoAction : MonsterAction {
         // Player랑 충돌하면 Target을 충돌한 Player로 변경한다.
         if (obj.gameObject.CompareTag("Player"))
         {
+            if (state == STATE.PROVOCATION)
+            {
+                return;
+            }
+
             Target = obj.gameObject;
         }
     }

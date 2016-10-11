@@ -39,11 +39,6 @@ public class PirateAction : PlayerAction {
         PlayerManager.Get_Inctance().Check_Dead();
         ani.SetBool("Dead", true);
     }
-    public override void Touch_Skill()
-    {
-        ani.SetTrigger("TouchSkill");
-        ani.SetTrigger("Idle");
-    }
 
     public override bool Set_Demage(float AttackDamage, string type)
     {
@@ -106,6 +101,25 @@ public class PirateAction : PlayerAction {
     public void Monster_Attack()
     {
         Target.Set_Demage(Attack, null);
+    }
+
+    public override void Touch_Skill()
+    {
+
+        ani.SetTrigger("TouchSkill");
+        ani.SetTrigger("Idle");
+    }
+
+    public void Set_TouchSkill()
+    {
+        Invoke("Stop_TouchSkillEffect", 5f);
+        UIManager.Get_Inctance().Set_PlayerState(transform.parent.name, "Provocation", 5f);
+        MonsterManager.Get_Inctance().Set_ParticularTarget(gameObject, 5f);
+        TouchAttack_Effect.SetActive(true);
+    }
+    void Stop_TouchSkillEffect()
+    {
+        TouchAttack_Effect.SetActive(false);
     }
 
 

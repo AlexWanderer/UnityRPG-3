@@ -127,31 +127,16 @@ public class UIManager : MonoBehaviour
 
     public void Set_PlayerState(string TargetName, string Symptom, float time)
     {
-        int index = -1;
-
-        switch(TargetName)
+        for (int i = 0; i < Player_State.Length; i++)
         {
-            case "Center":
-                {
-                    index = 0;
-                    break;
-                }
-            case "Sub1":
-                {
-                    index = 1;
-                    break;
-                }
-            case "Sub2":
-                {
-                    index = 2;
-                    break;
-                }
+            string str = string.Format("{0}State", TargetName);
+
+            if(Player_State[i].name.Contains(str))
+            {
+                Player_State[i].GetComponent<UI_StateManager>().Start_State(Symptom, time);
+                return;
+            }
         }
-
-        if (index == -1)
-            return;
-
-        Player_State[index].GetComponent<StateAction>().Start_Update(time, Symptom);
     }
 
     public GameObject Set_Mark(GameObject target)

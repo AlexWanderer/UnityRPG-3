@@ -8,6 +8,7 @@ public class MonsterAction : MonoBehaviour {
     {
         IDLE,                               // 대기
         ATTACK,                         // 공격
+        PROVOCATION,            // 도발
         CHARM,                          // 매료
         DEAD,                             // 죽음
         MAX,
@@ -73,4 +74,25 @@ public class MonsterAction : MonoBehaviour {
     {
     }
     public void Off_Active() { gameObject.SetActive(false); }
+
+    public void Set_StateAttack()
+    {
+        state = STATE.ATTACK;
+    }
+    public void Set_StateProvocation()
+    {
+        state = STATE.PROVOCATION;
+    }
+
+    public bool Check_StateProvocation()
+    {
+        if (state == STATE.PROVOCATION)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
 }
