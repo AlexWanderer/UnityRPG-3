@@ -37,7 +37,7 @@ public class BossHpAction : MonoBehaviour {
 
 
             MonsterAction data = Target.GetComponent<MonsterAction>();
-            value = data.Hp / data.Get_InitHP();
+            value = data.Get_HP() / data.InitHP;
 
             Gauge.value = value;
 

@@ -15,8 +15,8 @@ public class PlayerAction : MonoBehaviour
 
     public STATE state = STATE.IDLE;                              // Player의 상태
 
-    protected const float InitHP = 100f;                                // Hp의 초기값 (정적)
-    protected const float InitAttack = 2f;                              // Attack의 초기값 (정적)
+    public  float InitHP = 100f;                                // Hp의 초기값 
+    public float InitAttack = 2f;                              // Attack의 초기값
     public float Hp = 10f;                                                    // Hp
     public float Attack = 2f;                                                  // 공격력
 
@@ -25,6 +25,12 @@ public class PlayerAction : MonoBehaviour
     protected Vector3 StandPos = Vector3.zero;                // 초기 Position값
 
     public Animator ani = null;
+
+    void Awake()
+    {
+        ani = GetComponent<Animator>();
+        Hp = InitHP;
+    }
 
     // Player의 상태를 변환하는 함수.
     public virtual void Set_Move()
@@ -64,9 +70,20 @@ public class PlayerAction : MonoBehaviour
     public virtual void Set_Poison()
     {
     }
-   
 
-    //  Player의 InitHp를 반환하는 함수.
-    public float Get_InitHP() { return InitHP; }
+
+    // HP를 반환하는 함수.
+    public float Get_HP()
+    {
+        return Hp;
+    }
+
     public void Off_Active() { gameObject.SetActive(false); }
+    public bool Check_Dead()
+    {
+        if (state == STATE.DEAD) { return true; }
+
+        return false;
+
+    }
 }

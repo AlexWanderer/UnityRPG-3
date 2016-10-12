@@ -26,6 +26,7 @@ public class WizardAction : PlayerAction
     {
         state = STATE.ATTACK;
         ani.SetBool("Attack", true);
+        ani.SetBool("Move", false);
     }
     public override void Set_Idle()
     {
@@ -46,7 +47,6 @@ public class WizardAction : PlayerAction
     public override void Touch_Skill()
     {
         ani.SetTrigger("TouchSkill");
-        ani.SetTrigger("Idle");
     }
 
     public override bool Set_Demage(float AttackDamage, string type)
@@ -76,6 +76,8 @@ public class WizardAction : PlayerAction
         pos.y = 0.15f;
         Effect.transform.position = pos;
         Target.Set_Demage(10f, null);
+
+        ani.SetTrigger("Idle");
 
     }
 
@@ -199,11 +201,13 @@ public class WizardAction : PlayerAction
         // Target을 활성화하고 대기상태로 만든후 스페셜 공격 Effect를 만든다.
         Target.gameObject.SetActive(true);
         Target.GetComponent<MonsterAction>().Set_Idle();
+
+        yield return new WaitForSeconds(0.4f);
+
         Set_SpecialSkill_Effect();
-
-        yield return new WaitForSeconds(0.8f);
-
         ani.SetTrigger("Idle");
+
+        yield return new WaitForSeconds(0.5f);
 
         // ActionCamera의 Camera를 끈다.
         ActionCamera_Action.Get_Inctance().CameraOff();
@@ -222,6 +226,7 @@ public class WizardAction : PlayerAction
         yield return new WaitForSeconds(0.5f);
 
         Target.Set_Demage(Attack * 10.0f, "Skill");
+        MonsterManager.Get_Inctance().Set_ReAttack();
     }
 
     // 스페셜 공격의 Effect를 실행시키는 함수.

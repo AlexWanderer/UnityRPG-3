@@ -41,12 +41,12 @@ public class HpbarAction : MonoBehaviour {
             if (Target.CompareTag("Monster"))
             {
                 MonsterAction data = Target.GetComponent<MonsterAction>();
-                value = data.Hp / data.Get_InitHP();
+                value = data.Get_HP() / data.InitHP;
             }
             else if (Target.CompareTag("Player"))
             {
                 PlayerAction data = Target.GetComponent<PlayerAction>();
-                value = data.Hp / data.Get_InitHP();
+                value = data.Get_HP() / data.InitHP;
             }
             else
             {

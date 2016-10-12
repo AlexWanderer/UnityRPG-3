@@ -21,8 +21,8 @@ public class MonsterAction : MonoBehaviour {
 
 
 
-    protected const float initHP = 500f;                        // MAX HP ( 정적 )
-    const float initAttack = 1f;                                    // MAX ATTACK ( 정적 )
+    public float InitHP = 500f;                        // MAX HP ( 정적 )
+    public float initAttack = 1f;                                    // MAX ATTACK ( 정적 )
     public float Hp = 500f;                                           // 현재 HP
     public float Attack = 1f;                                       // 현재 ATTACK
         
@@ -36,6 +36,8 @@ public class MonsterAction : MonoBehaviour {
     void Awake()
     {
         ani = GetComponent<Animator>();
+        Condition = transform.FindChild("Condition").gameObject;
+        Hp = InitHP;
     }
    
     // 모든 Coroutine을 멈추고 state를 IDLE 상태로 변환하는 함수.
@@ -58,10 +60,10 @@ public class MonsterAction : MonoBehaviour {
         return false;
     }
 
-    // InitHP를 반환하는 함수.
-    public float Get_InitHP()
+    // HP를 반환하는 함수.
+    public float Get_HP()
     {
-        return initHP;
+        return Hp;
     }
 
     // Charm에 걸렸을때 실행되는 함수. time만큼 지난 후에는 Effect를 끄고 StartSet_Attack()를 실행시킨다.

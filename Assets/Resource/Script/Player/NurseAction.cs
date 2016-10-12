@@ -166,6 +166,7 @@ public class NurseAction : PlayerAction {
 
         // Player들을 Attack상태로 바꾼다. ( Active 변환 때문.)
         PlayerManager.Get_Inctance().Set_Attack();
+        MonsterManager.Get_Inctance().Set_ReAttack(Target.gameObject);
         yield break;
     }
 

@@ -114,7 +114,7 @@ public class PlayerManager : MonoBehaviour
 
         for (int i = 0; i < Characters.Length; i++)
         {
-            if (Characters[i] == null)
+            if (Characters[i] == null || Characters[i].GetComponent<PlayerAction>().Check_Dead())
             {
                 continue;
             }
@@ -134,7 +134,7 @@ public class PlayerManager : MonoBehaviour
         state = STATE.IDLE;
         for (int i = 0; i < Characters.Length; i++)
         {
-            if (Characters[i] == null)
+            if (Characters[i] == null || Characters[i].GetComponent<PlayerAction>().Check_Dead())
             {
                 continue;
             }
@@ -149,7 +149,7 @@ public class PlayerManager : MonoBehaviour
     {
         for (int i = 0; i < Characters.Length; i++)
         {
-            if (Characters[i] == null || Check_PlayerState(Characters[i], "DEAD"))
+            if (Characters[i] == null || Characters[i].GetComponent<PlayerAction>().Check_Dead())
             {
                 continue;
             }
@@ -162,15 +162,20 @@ public class PlayerManager : MonoBehaviour
     // 그리고 피가 채워진 해당 Player를 반환한다.
     public GameObject Set_PlayerHeal(float heal_value)
     {
-        GameObject target = Get_Player_LowHp();
-        target.GetComponent<PlayerAction>().Hp += heal_value;
+        PlayerAction target = Get_Player_LowHp().GetComponent<PlayerAction>();
+        target.Hp += heal_value;
 
-        UIManager.Get_Inctance().Set_Heal(target, heal_value);
+        if(target.Hp > target.InitHP)
+        {
+            target.Hp = target.InitHP;
+        }
 
-        return target;
+        UIManager.Get_Inctance().Set_Heal(target.gameObject, heal_value);
+
+        return target.gameObject;
     }
 
-    // 가장 피가 낮은 Player를 찾아 반환하는 함수.
+    // 가장 피가 낮은 (%적으로) Player를 찾아 반환하는 함수.
     public GameObject Get_Player_LowHp()
     {
         float hp = 1000f;
@@ -178,12 +183,15 @@ public class PlayerManager : MonoBehaviour
 
         for(int i = 0; i < Characters.Length; i++)
         {
-            if (Characters[i] == null) continue;
+            if (Characters[i] == null) { continue; }
 
-            if(hp > Characters[i].GetComponent<PlayerAction>().Hp)
+            PlayerAction player = Characters[i].GetComponent<PlayerAction>();
+            float value = player.Hp / player.InitHP;
+
+            if(hp > value)
             {
                 return_Player = Characters[i];
-                hp = return_Player.GetComponent<PlayerAction>().Hp;
+                hp = value;
             }
         }
 
@@ -305,16 +313,6 @@ public class PlayerManager : MonoBehaviour
             GameManager.Get_Inctance().Set_Faild();
             return;
         }
-    }
-    public bool Check_PlayerState(GameObject Player, string State)
-    {
-        PlayerAction player = Player.GetComponent<PlayerAction>();
-        if(player.state.ToString().Equals(State))
-        {
-            return true;
-        }
-
-        return false;
     }
 
     void OnTriggerEnter(Collider obj)

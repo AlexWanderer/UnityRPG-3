@@ -36,6 +36,7 @@ public class MonsterManager : MonoBehaviour {
     // Monster들을 List에 넣고 Attack를 시작하게한다.
     public void Ready_Attack(GameObject Monster_Group)
     {
+        Monsters.Clear();
         Monster_Group.GetComponent<BoxCollider>().enabled = false;
 
         //Monster_Group의 자식 == 출연할 몬스터
@@ -63,9 +64,9 @@ public class MonsterManager : MonoBehaviour {
             monster_action.StartSet_Attack();
         }
     }
-
     public void Ready_BossAttack(GameObject Monster_Group)
     {
+        Monsters.Clear();
         Monster_Group.GetComponent<BoxCollider>().enabled = false;
 
         GameObject Boss = Monster_Group.transform.GetChild(0).gameObject;
@@ -83,10 +84,22 @@ public class MonsterManager : MonoBehaviour {
         Monsters.Add(Boss);
     }
 
-    public void Start_BossAttack()
+    public void Set_ReAttack()
     {
-        Monsters[0].GetComponent<MonsterAction>().StartSet_Attack();
+        for(int i = 0; i < Monsters.Count; i++)
+        {
+            Monsters[i].GetComponent<MonsterAction>().StartSet_Attack();
+        }
     }
+    public void Set_ReAttack(GameObject Except_Obj)
+    {
+        for (int i = 0; i < Monsters.Count; i++)
+        {
+            if(Except_Obj == Monsters[i]) { continue; }
+            Monsters[i].GetComponent<MonsterAction>().StartSet_Attack();
+        }
+    }
+
 
     public void Set_Idle()
     {

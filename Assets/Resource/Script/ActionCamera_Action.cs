@@ -50,14 +50,12 @@ public class ActionCamera_Action : MonoBehaviour {
                     pos.z += 12f;
                     break;
                 }
-
             case "Wizard":
                 {
                     pos.y = 0.7f;
                     pos.z += 13f;
                     break;
                 }
-
             case "Wizard2":
                 {
                     GameObject Camera = transform.FindChild("UpDownCamera").gameObject;
@@ -69,11 +67,16 @@ public class ActionCamera_Action : MonoBehaviour {
                     ani.SetTrigger("UpDown");
                     return;
                 }
-
             case "Nurse":
                 {
                     pos.y = 0.7f;
                     pos.z += 12f;
+                    break;
+                }
+            case "Pirate":
+                {
+                    pos.y = 0.7f;
+                    pos.z += 14f;
                     break;
                 }
 
@@ -130,6 +133,6 @@ public class ActionCamera_Action : MonoBehaviour {
         ani.speed = 1f;
         CameraOff();
         PlayerManager.Get_Inctance().Set_Attack();
-        MonsterManager.Get_Inctance().Start_BossAttack();
+        MonsterManager.Get_Inctance().Set_ReAttack();
     }
 }

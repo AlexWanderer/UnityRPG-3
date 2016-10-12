@@ -169,7 +169,7 @@ public class WarriorAction : PlayerAction
 
         // Player들을 Attack상태로 바꾼다. ( Active 변환 때문.)
         PlayerManager.Get_Inctance().Set_Attack();
-        Target.StartSet_Attack();
+        MonsterManager.Get_Inctance().Set_ReAttack();
 
 
         yield break;
