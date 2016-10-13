@@ -15,6 +15,7 @@ public class WizardAction : PlayerAction
     void Awake()
     {
         ani = GetComponent<Animator>();
+        PlayerSkill_Manager.Get_Inctance().Set_Skill(this, transform.parent.name);
     }
 
     public override void Set_Move()
@@ -167,7 +168,7 @@ public class WizardAction : PlayerAction
     }
     IEnumerator C_Special_Skill()
     {
-       
+       if(SkillPoint != InitSkillPoint) { yield break; }
 
         // Target이 죽었을시 새로운 Target을 받는다.
         if (Target.gameObject.activeSelf == false)
@@ -227,6 +228,7 @@ public class WizardAction : PlayerAction
 
         Target.Set_Demage(Attack * 10.0f, "Skill");
         MonsterManager.Get_Inctance().Set_ReAttack();
+        SkillPoint = 0;
     }
 
     // 스페셜 공격의 Effect를 실행시키는 함수.

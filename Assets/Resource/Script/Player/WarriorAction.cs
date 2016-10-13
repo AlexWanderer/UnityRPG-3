@@ -15,8 +15,8 @@ public class WarriorAction : PlayerAction
 
     void Awake()
     {
-
         ani = GetComponent<Animator>();
+        PlayerSkill_Manager.Get_Inctance().Set_Skill(this, transform.parent.name);
     }
 
     public override void Set_Move()
@@ -133,6 +133,8 @@ public class WarriorAction : PlayerAction
     }
     IEnumerator C_Special_Skill()
     {
+        if (SkillPoint != InitSkillPoint) { yield break; }
+
         // Target이 죽었을시 새로운 Target을 받는다.
         if (Target.state.ToString().Equals("DEAD"))
             MonsterManager.Get_Inctance().Set_ReTarget(this);
@@ -170,6 +172,7 @@ public class WarriorAction : PlayerAction
         // Player들을 Attack상태로 바꾼다. ( Active 변환 때문.)
         PlayerManager.Get_Inctance().Set_Attack();
         MonsterManager.Get_Inctance().Set_ReAttack();
+        SkillPoint = 0f;
 
 
         yield break;

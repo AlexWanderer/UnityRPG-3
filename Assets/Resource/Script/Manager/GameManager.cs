@@ -15,18 +15,18 @@ public class GameManager : MonoBehaviour {
     };
 
     public GMSTATE GMstate = GMSTATE.IDLE;                                                 // 스테이지의 상태
-    public PlayerManager PlayerManager = null;                                              // 플레이어 관리 스크립트
+    Vector3 PlayerStandPos = Vector3.zero; 
    
-
-
     private static GameManager instance = null;
+    GameObject Boss = null;
 
     // Use this for initialization
     void Awake ()
     {
         instance = this;
         GMstate = GMSTATE.NEXT;
-      
+        PlayerStandPos = PlayerManager.Get_Inctance().transform.position;
+        Boss =  MonsterManager.Get_Inctance().gameObject.transform.FindChild("Boss_Collision").FindChild("EndPos").gameObject;
     }
     public static GameManager Get_Inctance()
     {
@@ -72,7 +72,10 @@ public class GameManager : MonoBehaviour {
                     break;
                 }
         }
-	}
+
+        UIManager.Get_Inctance().Set_Space(Distance_Percent(PlayerStandPos, Boss.transform.position, PlayerManager.Get_Inctance().transform.position));
+
+    }
 
     // 몬스터를 모두 해치우고 다음장소로 넘어가기위한 함수.
     public void Set_Next()
@@ -89,6 +92,16 @@ public class GameManager : MonoBehaviour {
     public void Set_Boss()
     {
         GMstate = GMSTATE.BOSS;
+    }
+
+    public float Distance_Percent(Vector3 A, Vector3 B, Vector3 NowPos)
+    {
+        float T = Vector3.Distance(A, B);
+        float C = Vector3.Distance(A, NowPos);
+
+        float value = C / T;
+
+        return value;
     }
 
 }

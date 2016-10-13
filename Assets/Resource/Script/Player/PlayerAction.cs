@@ -17,8 +17,10 @@ public class PlayerAction : MonoBehaviour
 
     public  float InitHP = 100f;                                // Hp의 초기값 
     public float InitAttack = 2f;                              // Attack의 초기값
+    public float InitSkillPoint = 20f;                           // 스킬 포인트의 초기값
     public float Hp = 10f;                                                    // Hp
     public float Attack = 2f;                                                  // 공격력
+    public float SkillPoint = 0f;                                             // 스킬 포인트
 
     public MonsterAction Target = null;                              // Player가 공격할 Monster의 스크립트.
 
@@ -30,6 +32,15 @@ public class PlayerAction : MonoBehaviour
     {
         ani = GetComponent<Animator>();
         Hp = InitHP;
+        Attack = InitAttack;
+        SkillPoint = 0f;
+    }
+
+    void Update()
+    {
+        SkillPoint += Time.deltaTime * 3f;
+
+        if(SkillPoint >= InitSkillPoint) { SkillPoint = InitSkillPoint; }
     }
 
     // Player의 상태를 변환하는 함수.
@@ -86,4 +97,5 @@ public class PlayerAction : MonoBehaviour
         return false;
 
     }
+
 }

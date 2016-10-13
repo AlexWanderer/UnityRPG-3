@@ -12,6 +12,8 @@ public class UIManager : MonoBehaviour
     public UISprite[] Players_HP = null;                                     // UI Player Hpbars ( 0 : Center  1 : Sub1    2 : Sub2 )
     public GameObject[] Player_State = null;
 
+    public UIScrollBar Space = null;
+
     public GameObject Boss_HP = null;
 
     public GameObject Mark_Prefab = null;
@@ -150,5 +152,10 @@ public class UIManager : MonoBehaviour
         mark.GetComponent<MarkAction>().Start_Update();
 
         return mark;
+    }
+
+    public void Set_Space(float value)
+    {
+        Space.value = value;
     }
 }
