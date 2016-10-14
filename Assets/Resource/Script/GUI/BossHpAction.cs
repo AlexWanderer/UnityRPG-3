@@ -7,7 +7,7 @@ public class BossHpAction : MonoBehaviour {
     public string name = "";
     public UISlider Gauge = null;
 
-    void Awake()
+   public void Set_Start()
     {
         GetComponentInChildren<UILabel>().text = name;
 

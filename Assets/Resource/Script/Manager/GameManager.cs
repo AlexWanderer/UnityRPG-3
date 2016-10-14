@@ -15,7 +15,8 @@ public class GameManager : MonoBehaviour {
     };
 
     public GMSTATE GMstate = GMSTATE.IDLE;                                                 // 스테이지의 상태
-    Vector3 PlayerStandPos = Vector3.zero; 
+    Vector3 PlayerStandPos = Vector3.zero;
+    float Timer = 0f;
    
     private static GameManager instance = null;
     GameObject Boss = null;
@@ -47,6 +48,9 @@ public class GameManager : MonoBehaviour {
 
     void Update ()
     {
+        Timer += Time.deltaTime;
+        UIManager.Get_Inctance().Set_Time((int)Timer);
+
         // 게임 상황을 Update문으로 계속 확인한다.
 	    switch(GMstate)
         {
@@ -73,7 +77,13 @@ public class GameManager : MonoBehaviour {
                 }
         }
 
-        UIManager.Get_Inctance().Set_Space(Distance_Percent(PlayerStandPos, Boss.transform.position, PlayerManager.Get_Inctance().transform.position));
+        float distance = Distance_Percent(PlayerStandPos, Boss.transform.position, PlayerManager.Get_Inctance().transform.position);
+        UIManager.Get_Inctance().Set_Space(distance);
+
+        if(0.6f < distance && distance < 0.8f)
+        {
+            UIManager.Get_Inctance().Set_Warning();
+        }
 
     }
 

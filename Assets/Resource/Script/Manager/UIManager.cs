@@ -13,6 +13,8 @@ public class UIManager : MonoBehaviour
     public GameObject[] Player_State = null;
 
     public UIScrollBar Space = null;
+    public UILabel Timer = null;
+    public GameObject BossWarning = null;
 
     public GameObject Boss_HP = null;
 
@@ -84,6 +86,7 @@ public class UIManager : MonoBehaviour
         Boss_HP.GetComponent<BossHpAction>().name = name;
         Boss_HP.GetComponent<BossHpAction>().Target = target;
         Boss_HP.SetActive(true);
+        Boss_HP.GetComponent<BossHpAction>().Set_Start();
     }
 
     // Target의 위치에 Hpbar를 만드는 함수.
@@ -157,5 +160,18 @@ public class UIManager : MonoBehaviour
     public void Set_Space(float value)
     {
         Space.value = value;
+    }
+    public void Set_Time(int value)
+    {
+        int HH = value / 60;
+        int MM = value % 60;
+
+        string form = string.Format("{0:D2}:{1:D2}", HH, MM);
+        Timer.text = form;
+    }
+
+    public void Set_Warning()
+    {
+        BossWarning.GetComponent<WarningAction>().Set_Warning();
     }
 }
