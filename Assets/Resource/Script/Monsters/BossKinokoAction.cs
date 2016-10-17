@@ -9,6 +9,7 @@ public class BossKinokoAction : MonsterAction {
     void Awake()
     {
         ActionCamera_Action.Get_Inctance().Set_preparation(transform, "Boss");
+        type = TYPE.BOSS;
         ani = GetComponent<Animator>();
     }
     public override void Set_Idle()

@@ -97,4 +97,12 @@ public class MonsterAction : MonoBehaviour {
             return false;
         }
     }
+
+    public bool Check_Dead()
+    {
+        if (state == STATE.DEAD) { return true; }
+
+        return false;
+
+    }
 }

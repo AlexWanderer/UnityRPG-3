@@ -298,22 +298,24 @@ public class PlayerManager : MonoBehaviour
 
         int DeadCount = 0;
 
-        //Character의 active가 false == Dead . 그러므로 DeadCount를 늘린다.
+        //Character의 state를 비교후 Player후만큼 DeadCount가 쌓이면 GM에게 Faild시킨다.
         for (int i = 0; i < Characters.Length; i++)
         {
             if (Characters[i].GetComponent<PlayerAction>().state.ToString().Equals("DEAD"))
             {
                 DeadCount++;
+
+
+                if(DeadCount == Characters.Length)
+                {
+                    GameManager.Get_Inctance().Set_Faild();
+                    StopAllCoroutines();
+                }
             }
         }
-
-        //Character의 죽은 숫자가 List에 있는 캐릭터숫자랑 동일하면 모든 Player가 죽은거니 GM의 Set_Faild()를 호출한다.
-        if (DeadCount == Characters.Length)
-        {
-            GameManager.Get_Inctance().Set_Faild();
-            return;
-        }
     }
+
+
 
     void OnTriggerEnter(Collider obj)
     {
@@ -322,20 +324,20 @@ public class PlayerManager : MonoBehaviour
         // Touch_Skill을 위해 PlayerManager의 Collider를 비활성화시킨다.
         if(obj.gameObject.name.Equals("Mob_Collision"))
         {
+            state = STATE.ATTACK;
             obj.gameObject.SetActive(true);
             MonsterManager.Get_Inctance().Ready_Attack(obj.gameObject);
             Set_Attack();
             GetComponent<BoxCollider>().enabled = false;
-            state = STATE.ATTACK;
         }
 
         // 보스 몬스터를 만나면 실행된다.
         if (obj.gameObject.name.Equals("Boss_Collision"))
         {
+            state = STATE.ATTACK;
             obj.gameObject.SetActive(true);
             MonsterManager.Get_Inctance().Ready_BossAttack(obj.gameObject);
             GetComponent<BoxCollider>().enabled = false;
-            state = STATE.ATTACK;
         }
     }
 }

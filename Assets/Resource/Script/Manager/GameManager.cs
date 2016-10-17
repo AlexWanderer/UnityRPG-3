@@ -15,6 +15,7 @@ public class GameManager : MonoBehaviour {
     };
 
     public GMSTATE GMstate = GMSTATE.IDLE;                                                 // 스테이지의 상태
+
     Vector3 PlayerStandPos = Vector3.zero;
     float Timer = 0f;
    
@@ -69,10 +70,22 @@ public class GameManager : MonoBehaviour {
 
             case GMSTATE.BOSS:
                 {
-                    
                     PlayerManager.Get_Inctance().Set_Idle();
                     MonsterManager.Get_Inctance().Set_Idle();
                     GMstate = GMSTATE.IDLE;
+                    break;
+                }
+
+            case GMSTATE.WIN:
+                {
+                    PlayerManager.Get_Inctance().Set_Idle();
+                    UIManager.Get_Inctance().Set_WinUI();
+                    break;
+                }
+            case GMSTATE.FAILD:
+                {
+                    MonsterManager.Get_Inctance().Set_Idle();
+                    UIManager.Get_Inctance().Set_FaildUI();
                     break;
                 }
         }
@@ -98,6 +111,11 @@ public class GameManager : MonoBehaviour {
     {
         GMstate = GMSTATE.FAILD;
     }
+    public void Set_Win()
+    {
+        GMstate = GMSTATE.WIN;
+    }
+
 
     public void Set_Boss()
     {

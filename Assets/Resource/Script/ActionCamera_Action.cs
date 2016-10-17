@@ -5,7 +5,7 @@ using System.Collections;
 public class ActionCamera_Action : MonoBehaviour {
 
     Animator ani = null;
-    public GameObject MainCamera = null;                        // Main Camera ( Active false될때가 있어서 )
+    //public GameObject MainCamera = null;                        // Main Camera ( Active false될때가 있어서 )
 
     private static ActionCamera_Action instance = null;
 
@@ -90,13 +90,13 @@ public class ActionCamera_Action : MonoBehaviour {
                     Camera.transform.localRotation = target.rotation;
 
                     ani.SetTrigger("Boss");
-                    MainCamera.SetActive(false);
+        //            MainCamera.SetActive(false);
                     return;
                 }
         }
 
         ani.SetTrigger("ZoomIn");
-        MainCamera.SetActive(false);
+//        MainCamera.SetActive(false);
         transform.position = pos;
     }
 
@@ -112,7 +112,7 @@ public class ActionCamera_Action : MonoBehaviour {
     // Main Camera를 활성화하고 모든 카메라를 끈 후 IDLE 상태로 바꾼다.
     public void CameraOff()
     {
-        MainCamera.SetActive(true);
+     //   MainCamera.SetActive(true);
 
         Camera[] Cameras = GetComponentsInChildren<Camera>();
 

@@ -62,6 +62,11 @@ public class HpbarAction : MonoBehaviour {
                 Gauge.fillAmount = 0;
 
             //Target의 월드상위치를 Camera의 뷰위치로 변환한다.
+            if(Camera.main == null)
+            {
+                yield return new WaitForSeconds(1.0f);
+            }
+
             Vector3 p = Camera.main.WorldToViewportPoint(Target.transform.position);
             //Taget의 뷰위치를 UICamera의 뷰위치로 변환후 Hpbar의 위치로 할당한다.
             this.transform.position = UICamera.mainCamera.ViewportToWorldPoint(p);

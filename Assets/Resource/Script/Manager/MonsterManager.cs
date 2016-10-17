@@ -43,46 +43,72 @@ public class MonsterManager : MonoBehaviour {
         for(int i = 0; i < Monster_Group.transform.childCount; i++)
         {
             GameObject Monster = Monster_Group.transform.GetChild(i).gameObject;
-            MonsterAction monster_action = Monster.GetComponent<MonsterAction>();
 
-            if(monster_action.type.ToString().Equals("BOSS"))
-            {
-                GameManager.Get_Inctance().Set_Boss();
-                return;
-            }
-
-            monster_action.Target = PlayerManager.Get_Inctance().Characters[i];
             // 만약 자식오브젝트가 Monster가 아니라면 continue한다.
             if (Monster.CompareTag("Monster") == false)
             {
                 continue;
             }
 
+            MonsterAction monster_action = Monster.GetComponent<MonsterAction>();
+            PlayerManager.Get_Inctance().Set_ReTarget(monster_action);
             Monster.SetActive(true);
             Monsters.Add(Monster);
+
             //Monster들이 Attack을 시작하도록 함수를 호출한다.
             monster_action.StartSet_Attack();
         }
     }
+
     public void Ready_BossAttack(GameObject Monster_Group)
     {
         Monsters.Clear();
         Monster_Group.GetComponent<BoxCollider>().enabled = false;
 
-        GameObject Boss = Monster_Group.transform.GetChild(0).gameObject;
-
-        // 만약 자식오브젝트가 Monster가 아니라면 continue한다.
-        if (Boss.CompareTag("Monster") == false)
+        //Monster_Group의 자식 == 출연할 몬스터
+        for (int i = 0; i < Monster_Group.transform.childCount; i++)
         {
-            return;
+            GameObject Monster = Monster_Group.transform.GetChild(i).gameObject;
+
+            // 만약 자식오브젝트가 Monster가 아니라면 continue한다.
+            if (Monster.CompareTag("Monster") == false)
+            {
+                continue;
+            }
+
+            MonsterAction monster_action = Monster.GetComponent<MonsterAction>();
+            PlayerManager.Get_Inctance().Set_ReTarget(monster_action);
+
+            Monster.SetActive(true);
+            Monsters.Add(Monster);
         }
-
         GameManager.Get_Inctance().Set_Boss();
-
-
-        Boss.SetActive(true);
-        Monsters.Add(Boss);
+        StartCoroutine(Check_PlayerWin());
     }
+
+    IEnumerator Check_PlayerWin()
+    {
+        while (true)
+        {
+            int DeadCheck = 0;
+            for (int i = 0; i < Monsters.Count; i++)
+            {
+                if (Monsters[i].GetComponent<MonsterAction>().state.ToString().Contains("DEAD") == true)
+                {
+                    DeadCheck++;
+
+                    if (DeadCheck == Monsters.Count)
+                    {
+                        GameManager.Get_Inctance().Set_Win();
+                        yield break;
+                    }
+                }
+            }
+
+            yield return null;
+        }
+    }
+    
 
     public void Set_ReAttack()
     {
@@ -105,7 +131,7 @@ public class MonsterManager : MonoBehaviour {
     {
         for (int i = 0; i < Monsters.Count; i++)
         {
-            if (Monsters[i] == null)
+            if (Monsters[i].GetComponent<MonsterAction>().Check_Dead())
             {
                 continue;
             }

@@ -75,7 +75,11 @@ public class Kinoko_LongAttack_Action : MonoBehaviour {
 
     void OnTriggerEnter(Collider obj)
     {
-        if(obj.gameObject.CompareTag("Monster") || obj.gameObject.name.Equals("Kinoko_LongAttack")) { return; }
+        if (obj.gameObject.CompareTag("Monster") || obj.gameObject.name.Equals("Kinoko_LongAttack") ||
+               obj.gameObject.name.Equals("Explosion")) { return; }
+
+
+
 
         if (obj.gameObject.CompareTag("Player"))
         {

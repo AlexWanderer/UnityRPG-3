@@ -4,6 +4,9 @@ using System.Collections;
 // UI를 관리하는 스크립트
 public class UIManager : MonoBehaviour
 {
+    public GameObject Default_UI = null;
+    public GameObject Faild_UI = null;
+    public GameObject Win_UI = null;
 
     public GameObject Hpbar_Prefab = null;                             // Hpbar Object Prefeb
     public GameObject Damage_Prefab = null;                         // Damage Text Prefab              
@@ -173,5 +176,16 @@ public class UIManager : MonoBehaviour
     public void Set_Warning()
     {
         BossWarning.GetComponent<WarningAction>().Set_Warning();
+    }
+
+    public void Set_FaildUI()
+    {
+  //      Default_UI.SetActive(false);
+        Faild_UI.SetActive(true);
+    }
+    public void Set_WinUI()
+    {
+  //      Default_UI.SetActive(false);
+        Win_UI.SetActive(true);
     }
 }

@@ -6,6 +6,7 @@ public class BaseMonsterAction : MonsterAction {
 
     void OnEnable()
     {
+        type = TYPE.BASE;
         UIManager.Get_Inctance().Set_Hpbar(gameObject);                             // 몬스터가 활성화되면 UIManager에게 자신의 Hpbar를 만들라고 요구한다.
     }
 
