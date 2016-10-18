@@ -1,110 +1,63 @@
 ﻿using UnityEngine;
 using System.Collections;
-
+using System.Collections.Generic;
 // 마법사인 Wizard의 스크립트.
 public class WizardAction : PlayerAction
 {
 
-    public GameObject Attack_Prefab = null;                             // Attack Effect prefab
-    GameObject AttackOBJ = null;                                             // Attack Effect obj
-    public GameObject TouchAttack_Effect = null;                    // TouchAttack Effect obj
-    public GameObject SpecialSkill_Effect = null;                      // SpecialAttack Effect obj
-    public GameObject Attack_Pos = null;                                 // Effect 좌표
+    public GameObject Attack_Prefab = null;                                                                     // Attack Effect prefab
+    GameObject AttackOBJ = null;                                                                                     // Attack Effect obj
+    public List<GameObject> AttackEffectList = new List<GameObject>();                     // Attack Effect가 담길 List.
+    public GameObject TouchAttack_Effect = null;                                                            // TouchAttack Effect obj
+    public GameObject SpecialSkill_Effect = null;                                                              // SpecialAttack Effect obj
+    public GameObject Attack_Pos = null;                                                                        // Effect 좌표
 
-
-    void Awake()
+    void OnEnable()
     {
-        ani = GetComponent<Animator>();
-        PlayerSkill_Manager.Get_Inctance().Set_Skill(this, transform.parent.name);
+        AttackEffectList.Clear();
     }
 
-    public override void Set_Move()
-    {
-        ani.SetBool("Move", true);
-        ani.SetBool("Attack", false);
-    }
-    public override void Set_Attack()
+    // Ani를 Attack 상태로  변환하는 함수.
+    public override void Set_AniAttack()
     {
         state = STATE.ATTACK;
         ani.SetBool("Attack", true);
         ani.SetBool("Move", false);
     }
-    public override void Set_Idle()
-    {
-        StopAllCoroutines();
-        ani.SetBool("Move", false);
-        ani.SetBool("Attack", false);
-        transform.localPosition = StandPos;
-        transform.rotation = Quaternion.identity;
 
-    }
-    public override void Set_Dead()
-    {
-        state = STATE.DEAD;
-        StopAllCoroutines();
-        PlayerManager.Get_Inctance().Check_Dead();
-        ani.SetBool("Dead", true);
-    }
-    public override void Touch_Skill()
-    {
-        ani.SetTrigger("TouchSkill");
-    }
-
-    public override bool Set_Demage(float AttackDamage, string type)
-    {
-        Hp -= AttackDamage;
-        UIManager.Get_Inctance().Set_Damage(gameObject, AttackDamage, type);
-        UIManager.Get_Inctance().Set_PlayerHp(Hp / InitHP, transform.parent.name);
-
-        if (Hp <= 0)
-        {
-            // 만약 Hp가 0이하면 관리자에게 죽었다고 보고한다.
-            Set_Dead();
-            return false;
-        }
-
-        return true;
-    }
-
-    public void Set_TouchSkill_Effect()
-    {
-        Vector3 target = Target.transform.position;
-        target.y = transform.position.y;
-        Vector3 v = target - transform.position;
-
-        GameObject Effect = Instantiate(TouchAttack_Effect, Vector3.zero, Quaternion.LookRotation(v)) as GameObject;
-        Vector3 pos = Attack_Pos.transform.position;
-        pos.y = 0.15f;
-        Effect.transform.position = pos;
-        Target.Set_Demage(10f, null);
-
-        ani.SetTrigger("Idle");
-
-    }
-
-    public void Start_MagicAttack()
-    {
-        StartCoroutine(C_MagicAttack());
-    }
+    //일반 공격을 하는 코루틴. Attack 애니에서 호출한다.
     IEnumerator C_MagicAttack()
     {
-        if (state != STATE.ATTACK)
-            yield break;
+        if (state != STATE.ATTACK) { yield break; }
 
         // Target이 null이거나 죽어있으면 새로운 Target을 받는다.
-        if (Target == null || Target.state.ToString().Equals("DEAD"))
+        if (Target == null || Target.Check_Dead())
         {
             MonsterManager.Get_Inctance().Set_ReTarget(this);
         }
 
-        // AttackEffect obj가 활성화되있지 않으면 (첫공격) AttackEffect를 생성한다.
-        if (AttackOBJ == null)
+        // AttackEffect가 하나도 만들어져있지 않으면 Effect OBJ를 하나 만든다.
+        if (AttackEffectList.Count == 0)
         {
-            AttackOBJ = Instantiate(Attack_Prefab).gameObject;
-            AttackOBJ.SetActive(false);
-            AttackOBJ.name = "WizardAttack";
-            AttackOBJ.transform.parent = null;
+            Create_AttackEffect();
         }
+        // 활동중이지 않은 Effect를 체크해 AttackObj에 넣는다.
+        for (int i = 0; i < AttackEffectList.Count; i++)
+        {
+            if (AttackEffectList[i].GetComponent<EffectAction>().active == false)
+            {
+                AttackOBJ = AttackEffectList[i];
+                break;
+            }
+
+            // Effect가 모두 활동중이면 새로 하나 만들고 마지막Effect를 다시 체크한다.
+            if (i == AttackEffectList.Count - 1)
+            {
+                Create_AttackEffect();
+                i--;
+            }
+        }
+
 
         // Player와 AttackEffect를 Target이 있는곳으로 바라보게 만든다.
         Vector3 target = Target.transform.position;
@@ -127,7 +80,7 @@ public class WizardAction : PlayerAction
         {
             timer += Time.deltaTime; 
 
-            // Effect와 Target의 거리가 0.5f 미만이면 ani를 원래 상태로 돌리고 코루틴을 종료한다.
+            // Effect와 Target의 거리가 0.5f 미만이면 ani를 원래 상태로 돌리고 while문을 벗어난다.
             if(Distance(AttackOBJ.transform.position, Target.transform.position) < 0.5f )
             {
                 ani.speed = 1f;
@@ -147,22 +100,47 @@ public class WizardAction : PlayerAction
         }
 
         // while문을 빠져나오면 Effect가 Target에 도달한것이니 Effect를 비활성화시키고 Target에게 데미지를 준다.
-        AttackOBJ.SetActive(false);
+        AttackOBJ.GetComponent<EffectAction>().Disenable();
         Target.Set_Demage(Attack, null);
         AttackOBJ.transform.position = Attack_Pos.transform.position;
 
         yield break;
     }
+    // Attack Effect를 만드는 함수.
+    void Create_AttackEffect()
+    {
+        GameObject obj = Instantiate(Attack_Prefab).gameObject;
+        obj.AddComponent<EffectAction>();
+        obj.SetActive(false);
+        obj.name = "WizardAttack";
+        obj.transform.parent = null;
+        AttackEffectList.Add(obj);
+    }
 
+    public void Set_TouchSkill_Effect()
+    {
+        Vector3 target = Target.transform.position;
+        target.y = transform.position.y;
+        Vector3 v = target - transform.position;
+
+        GameObject Effect = Instantiate(TouchAttack_Effect, Vector3.zero, Quaternion.LookRotation(v)) as GameObject;
+        Vector3 pos = Attack_Pos.transform.position;
+        pos.y = 0.15f;
+        Effect.transform.position = pos;
+        Target.Set_Demage(10f, null);
+
+        ani.SetTrigger("Idle");
+
+    }
+
+    // 왼쪽의 스페셜스킬버튼을 눌렀을때 실행되는 함수.
     public override void Special_Skill()
     {
-        // Player가 Idle상태이거나 Move상태이면 버튼을 눌러도 함수가 실행되지 않는다.
-        if (PlayerManager.Get_Inctance().state.ToString().Equals("IDLE") || PlayerManager.Get_Inctance().state.ToString().Equals("MOVE"))
-            return;
+        // 만약 Player들이 ATTACK상태가 아니면 스킬이 작동되지 않는다.
+        if (PlayerManager.Get_Inctance().state.ToString().Equals("ATTACk") == false) { return; }
 
-        //Target이 null이거나 죽어있으면 실행하지 않는다.
-        //if (Target == null || Target.state.ToString().Equals("DEAD"))
-        //    return;
+        // Target이 null이거나 죽었을시 스킬이 작동되지 않는다.
+        if (Target == null || Target.Check_Dead()) { return; }
 
         StartCoroutine(C_Special_Skill());
     }
@@ -201,7 +179,7 @@ public class WizardAction : PlayerAction
 
         // Target을 활성화하고 대기상태로 만든후 스페셜 공격 Effect를 만든다.
         Target.gameObject.SetActive(true);
-        Target.GetComponent<MonsterAction>().Set_Idle();
+        Target.GetComponent<MonsterAction>().Set_AniIdle();
 
         yield return new WaitForSeconds(0.4f);
 
@@ -230,7 +208,6 @@ public class WizardAction : PlayerAction
         MonsterManager.Get_Inctance().Set_ReAttack();
         SkillPoint = 0;
     }
-
     // 스페셜 공격의 Effect를 실행시키는 함수.
     public void Set_SpecialSkill_Effect()
     {
@@ -242,22 +219,6 @@ public class WizardAction : PlayerAction
 
     }
 
-    public override void Set_Poison()
-    {
-        StartCoroutine(C_Poison());
-        UIManager.Get_Inctance().Set_PlayerState(transform.parent.name, "Poison", 5f);
-    }
-    IEnumerator C_Poison()
-    {
-        for (int i = 0; i < 5; i++)
-        {
-            Set_Demage(1f, null);
-
-            yield return new WaitForSeconds(1f);
-        }
-
-        yield break;
-    }
 
     float Distance(Vector3 Target, Vector3 Player)
     {

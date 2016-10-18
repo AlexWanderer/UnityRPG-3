@@ -2,16 +2,22 @@
 using System.Collections;
 
 // Effect에 붙는 스크립트.
-// 현재는 시간이 지나면 알아서 꺼지는 내용밖에 없다.
+// 
 public class EffectAction : MonoBehaviour {
+
+   public bool active = false;
+    Vector3 StandPos = Vector3.zero;
 
 	void OnEnable()
     {
-        Invoke("Disenable", 3f);
+        active = true;
+        StandPos = transform.position;
     }
 
     public void Disenable()
     {
-        Destroy(gameObject); // 임시
+        gameObject.transform.position = StandPos;
+        active = false;
+        gameObject.SetActive(false);
     }
 }

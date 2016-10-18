@@ -154,7 +154,7 @@ public class PlayerManager : MonoBehaviour
                 continue;
             }
 
-            Monster.Target = Characters[i];
+            Monster.Target = Characters[i].GetComponent<PlayerAction>();
         }
     }
 

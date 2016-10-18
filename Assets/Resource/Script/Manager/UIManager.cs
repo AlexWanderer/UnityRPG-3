@@ -180,12 +180,12 @@ public class UIManager : MonoBehaviour
 
     public void Set_FaildUI()
     {
-  //      Default_UI.SetActive(false);
+        Default_UI.SetActive(false);
         Faild_UI.SetActive(true);
     }
     public void Set_WinUI()
     {
-  //      Default_UI.SetActive(false);
+        Default_UI.SetActive(false);
         Win_UI.SetActive(true);
     }
 }

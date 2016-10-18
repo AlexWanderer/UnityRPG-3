@@ -137,7 +137,7 @@ public class MonsterManager : MonoBehaviour {
             }
 
 
-            Monsters[i].GetComponent<MonsterAction>().Set_Idle();
+            Monsters[i].GetComponent<MonsterAction>().Set_AniIdle();
         }
     }
 
@@ -190,7 +190,7 @@ public class MonsterManager : MonoBehaviour {
                 return;
             }
 
-            Monsters[i].GetComponent<MonsterAction>().Target = Player;
+            Monsters[i].GetComponent<MonsterAction>().Target = Player.GetComponent<PlayerAction>();
             Monsters[i].GetComponent<MonsterAction>().Set_StateProvocation();
         }
 
@@ -212,7 +212,7 @@ public class MonsterManager : MonoBehaviour {
             if (Monster.Check_StateProvocation())
             {
                 PlayerManager.Get_Inctance().Set_ReTarget(Monster);
-                Monster.Set_StateAttack();
+                Monster.StartSet_Attack();
                
                 return;
             }

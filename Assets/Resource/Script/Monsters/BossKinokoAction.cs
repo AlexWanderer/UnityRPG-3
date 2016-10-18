@@ -3,97 +3,43 @@ using System.Collections;
 
 public class BossKinokoAction : MonsterAction {
 
-    public GameObject LongAttack_Effect = null;
-    public GameObject LongAttack_Position = null;
+    public GameObject LongAttack_Effect = null;                                     // 장거리공격 Effect
+    public GameObject LongAttack_Position = null;                                 // 장거리공격이 나오는 위치
 
-    void Awake()
+    void OnEnable()
     {
         ActionCamera_Action.Get_Inctance().Set_preparation(transform, "Boss");
         type = TYPE.BOSS;
         ani = GetComponent<Animator>();
     }
-    public override void Set_Idle()
-    {
-        StopAllCoroutines();
-        state = STATE.IDLE;
-        ani.SetTrigger("Idle");
-    }
-    public override void Set_Dead()
-    {
-        if (state == STATE.DEAD)
-            return;
 
-        state = STATE.DEAD;
-        StopAllCoroutines();
-        MonsterManager.Get_Inctance().Check_Dead(gameObject);
-        ani.SetBool("Dead", true);
-    }
     public override void StartSet_Attack()
     {
-        state = STATE.ATTACK;
-
         UIManager.Get_Inctance().Set_BossHp("버섯돌이", gameObject);
 
-        // 만약 CSet_Attack이 실행중인데 Start를 하게되면 Error가 난다. 
-        try
-        {
-            StartCoroutine(CSet_Attack());
-        }
-        catch
-        {
-            StopCoroutine(CSet_Attack());
-            StartCoroutine(CSet_Attack());
-        }
-    }
-    public override bool Set_Demage(float AttackDamage, string type)
-    {
-        if (state == STATE.DEAD)
-            return false;
+        // 만약 CSet_Attack이 실행중인데 Start를 하게되면 Error가 난다.
+        // Attack Corountine이 돌아가면 state가 Attack상태이고 state가 Attack이 아니면 Attack Coroutine이 내부에서 종료된다.
+        // state가 Attack상태라면 이미 Attack Coroutine이 돌아가고 있다는 말이기 때문에 Start할 필요가 없으므로 return한다.
+        if (state == STATE.ATTACK) { return; }
 
-        Hp -= AttackDamage;
-        UIManager.Get_Inctance().Set_Damage(gameObject, AttackDamage, type);
+        StartCoroutine(CSet_AniAttack());
 
-        if (Hp <= 0)
-        {
-            // 만약 Hp가 0이하면 관리자에게 죽었다고 보고한다.
-            Set_Dead();
-            return false;
-        }
-
-        return true;
-    }
-    public override void Set_Charm(float time)
+    } 
+    // 공격하는 Ani를 실행시키는 Coroutine.
+    // 피가 가장 낮은 Player를 공격한다.
+    IEnumerator CSet_AniAttack()
     {
-        state = STATE.CHARM;
-    }
-    public override void State_OFF()
-    {
-        state = STATE.IDLE;
-        Condition.transform.DestroyChildren();
-    }
-
-    // 공격하는 Coroutine.
-    IEnumerator CSet_Attack()
-    {
-        StartCoroutine(C_LongAttack());
+        state = STATE.ATTACK;
+        StartCoroutine(C_SpecialAttack());
 
         while (true)
         {
-            if (state != STATE.ATTACK)
-            {
-                yield return null;
-                continue;
-            }
+            // state가 Attack이나 도발 ( 특정 상대를 공격 ) 상태가 아니면 Coroutine을 종료한다.
+            if (state != STATE.ATTACK && state != STATE.PROVOCATION) { yield break; }
 
-            if (Target == null)
+            if (Target == null || Target.Check_Dead())
             {
-                yield return null;
-                continue;
-            }
-
-            if (Target.activeSelf == false)
-            {
-                Target = null;
+                Target = PlayerManager.Get_Inctance().Get_Player_LowHp().GetComponent<PlayerAction>();
             }
 
             ani.SetBool("Attack", true);
@@ -102,71 +48,59 @@ public class BossKinokoAction : MonsterAction {
             yield return null;
         }
     }
-    IEnumerator C_LongAttack()
+    // 특수 공격( 독, 장거리공격 등등)을 1초간격으로 하는 Coroutine.
+    IEnumerator C_SpecialAttack()
     {
         while (true)
         {
+            // state가 Attack이나 도발 ( 특정 상대를 공격 ) 상태가 아니면 Coroutine을 종료한다.
+            if (state != STATE.ATTACK && state != STATE.PROVOCATION) { yield break; }
+
             float random = Random.Range(0, 100);
-
-            if (Target == null)
+            // 10%확률로 Target에게 독공격을 한다.
+            if (random < 10)
             {
-                random = 0;
-            }
-
-            if (random < 20)
+                Debuff_poison();
+            }  
+            // 20%확률로 장거리 공격을 한다.
+          else if (random < 30)
             {
                 ani.SetTrigger("LongAttack");
                 ani.SetTrigger("Idle");
-                yield return new WaitForSeconds(1f);
-                continue;
             }
 
-           else if(random < 30)
-            {
-                Debuff_poison();
-                yield return new WaitForSeconds(1f);
-                continue;
-            }
+            yield return new WaitForSeconds(1f);
 
-            yield return new WaitForSeconds(0.5f);
         }
     }
-
-
+    // Target을 공격하는 함수. Attack Ani에서 이 함수를 호출한다.
     public void Player_Attack()
     {
-        Target.GetComponent<PlayerAction>().Set_Demage(Attack, null);
+        Target.Set_Demage(Attack, null);
     }
-
-    public void Long_Attack()
+    
+    // 장거리 공격의 Effect를 만드는 함수.
+    public void Set_LongAttack_Effect()
     {
         GameObject LongAttack = Instantiate(LongAttack_Effect, LongAttack_Position.transform.position, Quaternion.identity) as GameObject;
         LongAttack.name = "Kinoko_LongAttack";
     }
 
+    // Player중 랜덤한 한명에게에게 독 상태이상을 거는 함수.
     public void Debuff_poison()
     {
-        GameObject Target = PlayerManager.Get_Inctance().Get_RandomPlayer();
-        Target.GetComponent<PlayerAction>().Set_Poison();
+        // Player중 아무나 한명을 받아온다.,
+        PlayerAction Target = PlayerManager.Get_Inctance().Get_RandomPlayer().GetComponent<PlayerAction>();
 
+        // 대상에게 독 상태이상을 건다.
+        Target.Set_Poison();
+
+        // 독 Effect를 대상이 있는 곳에 만든다.
         GameObject Effectc = Instantiate(EffectManager.Get_Inctance().Poison_Effect, Vector3.zero, Quaternion.identity) as GameObject;
         Effectc.name = "PoisonEffect";
-        Effectc.transform.position = Target.transform.position;
+        Effectc.transform.position = Target.gameObject.transform.position;
     }
 
-    void OnCollisionEnter(Collision obj)
-    {
-        // Player랑 충돌하면 Target을 충돌한 Player로 변경한다.
-        if (obj.gameObject.CompareTag("Player"))
-        {
-            if (state == STATE.PROVOCATION)
-            {
-                return;
-            }
-
-            Target = obj.gameObject;
-        }
-    }
     // A과 B의 거리를 구하는 함수
     float Distance(Vector3 A, Vector3 B)
     {

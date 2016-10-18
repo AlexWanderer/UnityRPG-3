@@ -8,10 +8,8 @@ public class PirateAction : PlayerAction {
     public GameObject Attack_Pos = null;                                 // Effect 좌표
 
 
-    void Awake()
+    void OnEnable()
     {
-        ani = GetComponent<Animator>();
-
         Transform NPCs = transform.FindChild("NPC");
         SpecialSkill_NPC = new GameObject[ NPCs.childCount ];
 
@@ -20,52 +18,15 @@ public class PirateAction : PlayerAction {
             SpecialSkill_NPC[i] = NPCs.GetChild(i).gameObject;
             SpecialSkill_NPC[i].SetActive(false);
         }
-
-        PlayerSkill_Manager.Get_Inctance().Set_Skill(this, transform.parent.name);
     }
 
-    public override void Set_Move()
-    {
-        ani.SetBool("Move", true);
-        ani.SetBool("Attack", false);
-    }
-    public override void Set_Attack()
+    public override void Set_AniAttack()
     {
         state = STATE.ATTACK;
         ani.SetBool("Attack", true);
-    }
-    public override void Set_Idle()
-    {
-        StopAllCoroutines();
         ani.SetBool("Move", false);
-        ani.SetBool("Attack", false);
-        transform.localPosition = StandPos;
-        transform.rotation = Quaternion.identity;
-
-    }
-    public override void Set_Dead()
-    {
-        state = STATE.DEAD;
-        StopAllCoroutines();
-        PlayerManager.Get_Inctance().Check_Dead();
-        ani.SetBool("Dead", true);
     }
 
-    public override bool Set_Demage(float AttackDamage, string type)
-    {
-        Hp -= AttackDamage;
-        UIManager.Get_Inctance().Set_Damage(gameObject, AttackDamage, type);
-        UIManager.Get_Inctance().Set_PlayerHp(Hp / InitHP, transform.parent.name);
-
-        if (Hp <= 0)
-        {
-            // 만약 Hp가 0이하면 관리자에게 죽었다고 보고한다.
-            Set_Dead();
-            return false;
-        }
-
-        return true;
-    }
 
     public void Start_Attack()
     {
@@ -114,12 +75,6 @@ public class PirateAction : PlayerAction {
         Target.Set_Demage(Attack, null);
     }
 
-    public override void Touch_Skill()
-    {
-
-        ani.SetTrigger("TouchSkill");
-        ani.SetTrigger("Idle");
-    }
 
     public void Set_TouchSkill()
     {
@@ -133,12 +88,14 @@ public class PirateAction : PlayerAction {
         TouchAttack_Effect.SetActive(false);
     }
 
-
+    // 왼쪽의 스페셜스킬버튼을 눌렀을때 실행되는 함수.
     public override void Special_Skill()
     {
-        // Player가 Idle상태이거나 Move상태이면 버튼을 눌러도 함수가 실행되지 않는다.
-        if (PlayerManager.Get_Inctance().state.ToString().Equals("IDLE") || PlayerManager.Get_Inctance().state.ToString().Equals("MOVE"))
-            return;
+        // 만약 Player들이 ATTACK상태가 아니면 스킬이 작동되지 않는다.
+        if (PlayerManager.Get_Inctance().state.ToString().Equals("ATTACk") == false) { return; }
+
+        // Target이 null이거나 죽었을시 스킬이 작동되지 않는다.
+        if (Target == null || Target.Check_Dead()) { return; }
 
         StartCoroutine(C_Special_Skill());
     }
@@ -194,23 +151,15 @@ public class PirateAction : PlayerAction {
         yield break;
     }
 
-
-    public override void Set_Poison()
+    public void Target_Move(Vector3 target)
     {
-        StartCoroutine(C_Poison());
-        UIManager.Get_Inctance().Set_PlayerState(transform.parent.name, "Poison", 5f);
-    }
-    IEnumerator C_Poison()
-    {
-        for (int i = 0; i < 5; i++)
-        {
-            Set_Demage(1f, null);
+        target.y = transform.position.y;
+        Vector3 v = target - transform.position;
 
-            yield return new WaitForSeconds(1f);
-        }
-
-        yield break;
+        transform.rotation = Quaternion.LookRotation(v);
+        transform.Translate(Vector3.forward * Time.deltaTime * Speed);
     }
+  
 
     float Distance(Vector3 Target, Vector3 Player)
     {

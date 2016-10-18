@@ -13,18 +13,7 @@ public class WarriorAction : PlayerAction
     public float distance = 1.5f;
     public bool check_move = true;
 
-    void Awake()
-    {
-        ani = GetComponent<Animator>();
-        PlayerSkill_Manager.Get_Inctance().Set_Skill(this, transform.parent.name);
-    }
-
-    public override void Set_Move()
-    {
-        ani.SetBool("Move", true);
-        ani.SetBool("Attack", false);
-    }
-    public override void Set_Attack()
+    public override void Set_AniAttack()
     {
         state = STATE.ATTACK;
         ani.SetBool("Move", false);
@@ -32,42 +21,7 @@ public class WarriorAction : PlayerAction
 
         StartCoroutine(C_Attack());
     }
-    public override void Set_Idle()
-    {
-        StopAllCoroutines();
 
-        ani.SetBool("Attack", false);
-        ani.SetBool("Move", false);
-        transform.localPosition = StandPos;
-        transform.rotation = Quaternion.identity;
-
-        state = STATE.IDLE;
-
-        
-    }
-    public override void Set_Dead()
-    {
-        state = STATE.DEAD;
-        StopAllCoroutines();
-        PlayerManager.Get_Inctance().Check_Dead();
-        ani.SetBool("Dead", true);
-    }
-
-    public override bool Set_Demage(float AttackDamage, string type)
-    {
-        Hp -= AttackDamage;
-        UIManager.Get_Inctance().Set_Damage(gameObject, AttackDamage, type);
-        UIManager.Get_Inctance().Set_PlayerHp(Hp / InitHP, transform.parent.name);
-
-        if (Hp <= 0)
-        {
-            // 만약 Hp가 0이하면 관리자에게 죽었다고 보고한다.
-            Set_Dead();
-            return false;
-        }
-
-        return true;
-    }
 
     IEnumerator C_Attack()
     {
@@ -113,21 +67,14 @@ public class WarriorAction : PlayerAction
     {
         Target.Set_Demage(Attack, null);
     }
-
-    public override void Touch_Skill()
-    {
-        ani.SetTrigger("TouchSkill");
-        ani.SetTrigger("Idle");
-    }
+    // 왼쪽의 스페셜스킬버튼을 눌렀을때 실행되는 함수.
     public override void Special_Skill()
     {
-        // 만약 Player들이 IDLE or MOVE상태면 스킬이 작동되지 않는다.
-        if (PlayerManager.Get_Inctance().state.ToString().Equals("IDLE") || PlayerManager.Get_Inctance().state.ToString().Equals("MOVE"))
-            return;
+        // 만약 Player들이 ATTACK상태가 아니면 스킬이 작동되지 않는다.
+        if (PlayerManager.Get_Inctance().state.ToString().Equals("ATTACk") == false) { return; }
 
         // Target이 null이거나 죽었을시 스킬이 작동되지 않는다.
-        if (Target == null || Target.gameObject.activeSelf == false)
-            return;
+        if (Target == null || Target.Check_Dead()) { return; }
 
         StartCoroutine(C_Special_Skill());
     }
@@ -197,31 +144,16 @@ public class WarriorAction : PlayerAction
 
     }
 
-    public override void Set_Poison()
-    {
-        StartCoroutine(C_Poison());
-        UIManager.Get_Inctance().Set_PlayerState(transform.parent.name, "Poison", 5f);
-    }
-    IEnumerator C_Poison()
-    {
-        for (int i = 0; i < 5; i++)
-        {
-            Set_Demage(1f, null);
 
-            yield return new WaitForSeconds(1f);
-        }
-
-        yield break;
-    }
 
     // Target이 있는쪽으로 이동하는 함수.
-    public override void Target_Move(Vector3 target)
+    public void Target_Move(Vector3 target)
     {
         target.y = transform.position.y;
         Vector3 v = target - transform.position;
 
         transform.rotation = Quaternion.LookRotation(v);
-        transform.Translate(Vector3.forward * Time.deltaTime * 5f);
+        transform.Translate(Vector3.forward * Time.deltaTime * Speed);
     }
     float Distance(Vector3 Target, Vector3 Player)
     {

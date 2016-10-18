@@ -12,58 +12,14 @@ public class NurseAction : PlayerAction {
     public GameObject TouchAttack_Effect = null;    //  Touch Attack Effect obj
     public GameObject Attack_Pos = null;                 // Attack Position obj
 
-    void Awake()
-    {
-        ani = GetComponent<Animator>();
-        PlayerSkill_Manager.Get_Inctance().Set_Skill(this, transform.parent.name);
-    }
-
-    public override void Set_Move()
-    {
-        ani.SetBool("Move", true);
-        ani.SetBool("Attack", false);
-    }
-    public override void Set_Attack()
+    public override void Set_AniAttack()
     {
         state = STATE.ATTACK;
         ani.SetBool("Attack", true);
-    }
-    public override void Set_Idle()
-    {
-        StopAllCoroutines();
         ani.SetBool("Move", false);
-        ani.SetBool("Attack", false);
-        transform.localPosition = StandPos;
-        transform.rotation = Quaternion.identity;
-    }
-    public override void Set_Dead()
-    {
-        state = STATE.DEAD;
-        StopAllCoroutines();
-        PlayerManager.Get_Inctance().Check_Dead();
-        ani.SetBool("Dead", true);
-    }
-    public override void Touch_Skill()
-    {
-        ani.SetTrigger("TouchSkill");
-        ani.SetTrigger("Idle");
+
     }
 
-    public override bool Set_Demage(float AttackDamage, string type)
-    {
-        Hp -= AttackDamage;
-        UIManager.Get_Inctance().Set_Damage(gameObject, AttackDamage, type);
-        UIManager.Get_Inctance().Set_PlayerHp(Hp / InitHP, transform.parent.name);
-
-        if (Hp <= 0)
-        {
-            // 만약 Hp가 0이하면 관리자에게 죽었다고 보고한다.
-            Set_Dead();
-            return false;
-        }
-
-        return true;
-    }
 
     public void Set_TouchSkill()
     {
@@ -120,16 +76,14 @@ public class NurseAction : PlayerAction {
 
         yield break;
     }
-
+    // 왼쪽의 스페셜스킬버튼을 눌렀을때 실행되는 함수.
     public override void Special_Skill()
     {
-        // Player가 Idle상태이거나 Move상태이면 버튼을 눌러도 함수가 실행되지 않는다.
-        //if (PlayerManager.Get_Inctance().state.ToString().Equals("IDLE") || PlayerManager.Get_Inctance().state.ToString().Equals("MOVE"))
-        //    return;
+        // 만약 Player들이 ATTACK상태가 아니면 스킬이 작동되지 않는다.
+        if (PlayerManager.Get_Inctance().state.ToString().Equals("ATTACk") == false) { return; }
 
-        //Target이 null이거나 죽어있으면 실행하지 않는다.
-        //if (Target == null || Target.gameObject.activeSelf == false)
-        //    return;
+        // Target이 null이거나 죽었을시 스킬이 작동되지 않는다.
+        if (Target == null || Target.Check_Dead()) { return; }
 
         StartCoroutine(C_Special_Skill());
     }
@@ -164,7 +118,7 @@ public class NurseAction : PlayerAction {
         MonsterManager.Get_Inctance().Monsters_Active(null, "ON");
 
         // Target에게 3초동안 Charm 상태로 바꾼다.
-        Target.Set_Charm(3f);
+        Target.Set_StateCharm(3f);
 
         // Player들을 Attack상태로 바꾼다. ( Active 변환 때문.)
         PlayerManager.Get_Inctance().Set_Attack();
@@ -174,21 +128,6 @@ public class NurseAction : PlayerAction {
         yield break;
     }
 
-    public override void Set_Poison()
-    {
-        StartCoroutine(C_Poison());
-        UIManager.Get_Inctance().Set_PlayerState(transform.parent.name, "Poison", 5f);
-    }
-    IEnumerator C_Poison()
-    {
-        for(int i = 0; i < 5; i ++)
-        {
-            Set_Demage(1f, null);
 
-            yield return new WaitForSeconds(1f);
-        }
-
-        yield break;
-    }
 
 }
