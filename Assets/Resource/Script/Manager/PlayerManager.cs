@@ -23,16 +23,17 @@ public class PlayerManager : MonoBehaviour
 
     void Awake()
     {
-        Characters[0] = transform.FindChild("Center").GetChild(0).gameObject;
-        Characters[1] = transform.FindChild("Sub1").GetChild(0).gameObject;
-        Characters[2] = transform.FindChild("Sub2").GetChild(0).gameObject;
-
-        for (int i = 0; i < Characters.Length; i++)
+        if (transform.FindChild("Center").childCount != 0)
         {
-            if (Characters[i].activeSelf == false)
-            {
-                Characters[i] = null;
-            }
+            Characters[0] = transform.FindChild("Center").GetChild(0).gameObject;
+        }
+        if (transform.FindChild("Sub1").childCount != 0)
+        {
+            Characters[1] = transform.FindChild("Sub1").GetChild(0).gameObject;
+        }
+        if (transform.FindChild("Sub2").childCount != 0)
+        {
+            Characters[2] = transform.FindChild("Sub2").GetChild(0).gameObject;
         }
 
         state = STATE.MOVE;
@@ -84,12 +85,9 @@ public class PlayerManager : MonoBehaviour
         // Character의 이동 Ani를 호출한다.
         for (int i = 0; i < Characters.Length; i++)
         {
-            if (Characters[i] == null)
-            {
-                break;
-            }
+            if (Characters[i] == null) { continue; }
 
-            Characters[i].GetComponent<PlayerAction>().Set_Move();
+            Characters[i].GetComponent<PlayerAction>().Set_AniMove();
         }
         GetComponent<BoxCollider>().enabled = true;
         StartCoroutine(C_PlayerMove());
@@ -124,7 +122,7 @@ public class PlayerManager : MonoBehaviour
 
             MonsterManager.Get_Inctance().Set_ReTarget(Player);
 
-            Player.Set_Attack();
+            Player.Set_AniAttack();
         }
     }
 
@@ -140,7 +138,7 @@ public class PlayerManager : MonoBehaviour
             }
 
 
-            Characters[i].GetComponent<PlayerAction>().Set_Idle();
+            Characters[i].GetComponent<PlayerAction>().Set_AniIdle();
         }
     }
 
@@ -199,6 +197,7 @@ public class PlayerManager : MonoBehaviour
 
     }
 
+    // Player중 랜덤한 한명을 반환한다.
     public GameObject Get_RandomPlayer()
     {
         if (Characters.Length == 0) { return null; }
@@ -247,7 +246,7 @@ public class PlayerManager : MonoBehaviour
 
             if (obj.CompareTag("Player"))
             {
-                obj.GetComponent<PlayerAction>().Touch_Skill();
+                obj.GetComponent<PlayerAction>().Set_AniTouchSkill();
             }
 
             Debug.DrawRay(ray.origin, ray.direction * 100f, Color.yellow);
@@ -275,6 +274,8 @@ public class PlayerManager : MonoBehaviour
                     if (Characters[i] == target)
                         continue;
 
+                    if(Characters[i] == null) { continue; }
+
                     Characters[i].SetActive(false);
                 }
             }
@@ -283,6 +284,8 @@ public class PlayerManager : MonoBehaviour
         {
             for (int i = 0; i < Characters.Length; i++)
             {
+                if (Characters[i] == null) { continue; }
+
                 Characters[i].SetActive(true);
             }
         }

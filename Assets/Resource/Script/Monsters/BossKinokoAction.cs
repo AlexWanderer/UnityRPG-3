@@ -6,6 +6,9 @@ public class BossKinokoAction : MonsterAction {
     public GameObject LongAttack_Effect = null;                                     // 장거리공격 Effect
     public GameObject LongAttack_Position = null;                                 // 장거리공격이 나오는 위치
 
+    float PoisonDamage = 1f;
+    float PoisonTime = 5f;
+
     void OnEnable()
     {
         ActionCamera_Action.Get_Inctance().Set_preparation(transform, "Boss");
@@ -17,10 +20,11 @@ public class BossKinokoAction : MonsterAction {
     {
         UIManager.Get_Inctance().Set_BossHp("버섯돌이", gameObject);
 
+        // 이미 Attack Coroutine이 실행되고 있거나 사망했으면 함수를 종료한다
         // 만약 CSet_Attack이 실행중인데 Start를 하게되면 Error가 난다.
         // Attack Corountine이 돌아가면 state가 Attack상태이고 state가 Attack이 아니면 Attack Coroutine이 내부에서 종료된다.
         // state가 Attack상태라면 이미 Attack Coroutine이 돌아가고 있다는 말이기 때문에 Start할 필요가 없으므로 return한다.
-        if (state == STATE.ATTACK) { return; }
+        if (state == STATE.ATTACK || state == STATE.DEAD) { return; }
 
         StartCoroutine(CSet_AniAttack());
 
@@ -79,7 +83,7 @@ public class BossKinokoAction : MonsterAction {
         Target.Set_Demage(Attack, null);
     }
     
-    // 장거리 공격의 Effect를 만드는 함수.
+    // 장거리 공격의 Effect를 만드는 함수. Long Attack Ani에서 이 함수를 호출한다
     public void Set_LongAttack_Effect()
     {
         GameObject LongAttack = Instantiate(LongAttack_Effect, LongAttack_Position.transform.position, Quaternion.identity) as GameObject;
@@ -93,7 +97,7 @@ public class BossKinokoAction : MonsterAction {
         PlayerAction Target = PlayerManager.Get_Inctance().Get_RandomPlayer().GetComponent<PlayerAction>();
 
         // 대상에게 독 상태이상을 건다.
-        Target.Set_Poison();
+        Target.Set_StatePoison(PoisonDamage, PoisonTime);
 
         // 독 Effect를 대상이 있는 곳에 만든다.
         GameObject Effectc = Instantiate(EffectManager.Get_Inctance().Poison_Effect, Vector3.zero, Quaternion.identity) as GameObject;

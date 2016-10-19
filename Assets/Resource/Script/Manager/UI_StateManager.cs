@@ -17,7 +17,7 @@ public class UI_StateManager : MonoBehaviour {
         }
     }
 
-    public void Start_State(string Symptom, float time)
+    public void Start_PlayerState(string Symptom, float time)
     {
         for(int i = 0; i < Icons.Length; i++)
         {

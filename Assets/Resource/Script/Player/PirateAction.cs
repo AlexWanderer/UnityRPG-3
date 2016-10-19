@@ -1,15 +1,20 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+// 해적 Pirate의 소스.
+// 중거리에서 대포를 날린다.
 public class PirateAction : PlayerAction {
 
-    public GameObject TouchAttack_Effect = null;                    // TouchAttack Effect obj
-    public GameObject[] SpecialSkill_NPC = null;                      
-    public GameObject Attack_Pos = null;                                 // Effect 좌표
+    public GameObject TouchAttack_Effect_Prefab = null;                    // TouchAttack Effect Prefab obj
+    public GameObject[] SpecialSkill_NPC = null;                                 // Special Attack을 하는 눈송이 NPC들.
+    public GameObject Attack_Pos = null;                                            // Effect 좌표
+    float TouchSkill_Time = 5f;
+
 
 
     void OnEnable()
     {
+        // 자식인 NPC들을 SpecialSkill_NPC에 저장해놓는다.
         Transform NPCs = transform.FindChild("NPC");
         SpecialSkill_NPC = new GameObject[ NPCs.childCount ];
 
@@ -19,29 +24,28 @@ public class PirateAction : PlayerAction {
             SpecialSkill_NPC[i].SetActive(false);
         }
     }
+ 
 
+
+    // Attack을 담당하는 Coroutine을 실행하는 함수.
     public override void Set_AniAttack()
     {
         state = STATE.ATTACK;
-        ani.SetBool("Attack", true);
-        ani.SetBool("Move", false);
-    }
-
-
-    public void Start_Attack()
-    {
         StartCoroutine(C_Attack());
     }
+   
+    
+    
+    //일반 공격을 하는 코루틴. Attack 애니에서 호출한다.
     IEnumerator C_Attack()
     {
         while (true)
         {
             // 상태가 Attack이 아닌경우 코루틴을 종료한다.
-            if (state != STATE.ATTACK)
-                yield break;
+            if (state != STATE.ATTACK) { yield break; }
 
             // Target이 null이거나 죽어있는 MonsterManager에게 새로운 Target을 받아온다.
-            if (Target == null || Target.state.ToString().Equals("DEAD"))
+            if (Target == null || Target.Check_Dead())
             {
                 MonsterManager.Get_Inctance().Set_ReTarget(this);
             }
@@ -52,60 +56,82 @@ public class PirateAction : PlayerAction {
             Vector3 v = target - transform.position;
             transform.rotation = Quaternion.LookRotation(v);
 
-            if (Distance(target, transform.position) > 10f)
+            // Target과 거리가 4f이상이면 Target쪽으로 움직인다.
+            if (Distance(Target.transform.position, transform.position) > 5f)
             {
-                if (state != STATE.SKILL)
-                {
-                    Set_Move();
-                    Target_Move(Target.gameObject.transform.position);
-                    yield return null;
-                }
+                // 스페셜 스킬중에는 움직이지 않도록 한다.
+                if (state == STATE.SKILL) { yield return null; }
+
+                // Ani를 Move로 변환한다,
+                Set_AniMove();
+
+                transform.Translate(Vector3.forward * Time.deltaTime * Speed);
+                yield return null;
             }
+            // 거리가 10f 미만이면 공격하는 Ani를 호출한다.
             else
             {
                 ani.SetBool("Attack", true);
             }
 
             yield return null;
-
         }
     }
-    public void Monster_Attack()
+    // Target을 공격하는 함수. Attack Ani에서 호출한다.
+    void Monster_Attack()
     {
-        Target.Set_Demage(Attack, null);
+        Target.Set_Demage(BaseAttack, null);
     }
 
 
+
+    // TouchSkill을 하는 함수. TouchSkill Ani에서 호출한다.
     public void Set_TouchSkill()
     {
-        Invoke("Stop_TouchSkillEffect", 5f);
-        UIManager.Get_Inctance().Set_PlayerState(transform.parent.name, "Provocation", 5f);
-        MonsterManager.Get_Inctance().Set_ParticularTarget(gameObject, 5f);
-        TouchAttack_Effect.SetActive(true);
+        // TochSkill_Time후에 SKillEffect를 끈다.
+        Invoke("Stop_TouchSkillEffect", TouchSkill_Time);
+
+        // Player의 HpBar옆에 도발아이콘을 띄우게 한다.
+        UIManager.Get_Inctance().Set_PlayerState(transform.parent.name, "Provocation", TouchSkill_Time);
+        // 모든 몬스터들의 Target을 자기로 고정시킨다. TouchSkill_Time만큼 지나면 Target은 다시 재조정된다.
+        MonsterManager.Get_Inctance().Set_ParticularTarget(gameObject, TouchSkill_Time);
+        TouchAttack_Effect_Prefab.SetActive(true);
     }
+    // TouchSkillEffect를 끄는 함수.
     void Stop_TouchSkillEffect()
     {
-        TouchAttack_Effect.SetActive(false);
+        TouchAttack_Effect_Prefab.SetActive(false);
     }
+
+
 
     // 왼쪽의 스페셜스킬버튼을 눌렀을때 실행되는 함수.
     public override void Special_Skill()
     {
-        // 만약 Player들이 ATTACK상태가 아니면 스킬이 작동되지 않는다.
-        if (PlayerManager.Get_Inctance().state.ToString().Equals("ATTACk") == false) { return; }
+        // 만약 Player가 ATTACK상태가 아니면 스킬이 작동되지 않는다.
+        if (state != STATE.ATTACK) { return; }
+    
+        // SkillPoint가 다 차지않았으면 함수를 종료한다.
+        if (SkillPoint != InitSkillPoint) { return; }
 
         // Target이 null이거나 죽었을시 스킬이 작동되지 않는다.
         if (Target == null || Target.Check_Dead()) { return; }
 
+        state = STATE.SKILL;
         StartCoroutine(C_Special_Skill());
     }
+    // Specal Skill이 작동하는 함수.
     IEnumerator C_Special_Skill()
     {
-        if (SkillPoint != InitSkillPoint) { yield break; }
-
         // Target이 죽었을시 새로운 Target을 받는다.
-        if (Target.gameObject.activeSelf == false)
+        if (Target.Check_Dead())
+        {
             MonsterManager.Get_Inctance().Set_ReTarget(this);
+        }
+
+        //현재 Player의 회전값을 저장한후 회전값을 초기화한다.
+        Quaternion InitRotation = gameObject.transform.rotation;
+        transform.rotation = Quaternion.identity;
 
         // ActionCamera에게 Wizard의 애니메이션을 실행시키게 한다.
         ActionCamera_Action.Get_Inctance().Set_preparation(transform, "Pirate");
@@ -118,6 +144,7 @@ public class PirateAction : PlayerAction {
 
         ani.SetTrigger("SpecialSkill");
 
+        //  NPC들을 활성화시킨후 공격준비를 한다.
         for(int i = 0; i < SpecialSkill_NPC.Length; i++)
         {
             SpecialSkill_NPC[i].SetActive(true);
@@ -134,33 +161,25 @@ public class PirateAction : PlayerAction {
         // ActionCamera의 Camera를 끈다.
         ActionCamera_Action.Get_Inctance().CameraOff();
 
-        // Warrior을 제외한 모든 Player, Monster의 Active를 true시킨다.
+        // Player을 제외한 모든 Player, Monster의 Active를 true시킨다.
         PlayerManager.Get_Inctance().Players_Active(null, "ON");
         MonsterManager.Get_Inctance().Monsters_Active(null, "ON");
 
-        // Target에게 데미지를 준다.
-        Target.Set_Demage(Attack * 10.0f, "Skill");
+        // Player의 회전값을 원래대로 되돌린다.
+        transform.rotation = InitRotation;
 
         // Player들을 Attack상태로 바꾼다. ( Active 변환 때문.)
         PlayerManager.Get_Inctance().Set_Attack();
         MonsterManager.Get_Inctance().Set_ReAttack();
 
+        // SkillPoint를 초기화한다.
         SkillPoint = 0f;
-
-
         yield break;
     }
 
-    public void Target_Move(Vector3 target)
-    {
-        target.y = transform.position.y;
-        Vector3 v = target - transform.position;
 
-        transform.rotation = Quaternion.LookRotation(v);
-        transform.Translate(Vector3.forward * Time.deltaTime * Speed);
-    }
-  
 
+    // A와 B사이의 거리를 반환하는 함수. ( 음수값이 없다. )
     float Distance(Vector3 Target, Vector3 Player)
     {
         return Mathf.Abs(Vector3.Distance(Target, Player));

@@ -234,22 +234,15 @@ public class MonsterManager : MonoBehaviour {
         // 모든 Monster들의 Active를 비활성화 한다. 
         if (type.Equals("OFF"))
         {
-            if (target == null)
+            for (int i = 0; i < Monsters.Count; i++)
             {
-                for (int i = 0; i < Monsters.Count; i++)
-                {
-                    Monsters[i].SetActive(false);
-                }
-            }
-            else
-            {
-                for (int i = 0; i < Monsters.Count; i++)
-                {
-                    if (Monsters[i] == target)
-                        continue;
 
-                    Monsters[i].SetActive(false);
-                }
+                // 만약 Target과 Monster가 같으면 넘긴다.
+                if (Monsters[i] == target) { continue; }
+
+                Monsters[i].GetComponent<MonsterAction>().Set_AniIdle();
+                Monsters[i].SetActive(false);
+
             }
         }
         // 모든 Monster들의 Active를 활성화 한다.
@@ -257,7 +250,7 @@ public class MonsterManager : MonoBehaviour {
         {
             for (int i = 0; i < Monsters.Count; i++)
             {
-                if (Monsters[i].GetComponent<MonsterAction>().state.ToString().Equals("DEAD"))  continue;
+                if (Monsters[i].GetComponent<MonsterAction>().state.ToString().Equals("DEAD")) continue;
 
                 Monsters[i].SetActive(true);
             }

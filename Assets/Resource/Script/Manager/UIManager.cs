@@ -141,7 +141,7 @@ public class UIManager : MonoBehaviour
 
             if(Player_State[i].name.Contains(str))
             {
-                Player_State[i].GetComponent<UI_StateManager>().Start_State(Symptom, time);
+                Player_State[i].GetComponent<UI_StateManager>().Start_PlayerState(Symptom, time);
                 return;
             }
         }

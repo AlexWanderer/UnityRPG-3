@@ -16,10 +16,11 @@ public class BaseMonsterAction : MonsterAction {
 
     public override void StartSet_Attack()
     {
+        // 이미 Attack Coroutine이 실행되고 있거나 사망했으면 함수를 종료한다
         // 만약 CSet_Attack이 실행중인데 Start를 하게되면 Error가 난다.
         // Attack Corountine이 돌아가면 state가 Attack상태이고 state가 Attack이 아니면 Attack Coroutine이 내부에서 종료된다.
         // state가 Attack상태라면 이미 Attack Coroutine이 돌아가고 있다는 말이기 때문에 Start할 필요가 없으므로 return한다.
-        if (state == STATE.ATTACK) { return; }
+        if (state == STATE.ATTACK || state == STATE.DEAD) { return; }
 
         StartCoroutine(CSet_AniAttack());
     }

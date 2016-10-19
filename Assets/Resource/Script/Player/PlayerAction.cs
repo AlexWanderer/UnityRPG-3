@@ -18,7 +18,7 @@ public class PlayerAction : MonoBehaviour
     public float InitAttack = 2f;                                        // Attack의 초기값
     public float InitSkillPoint = 20f;                                 // 스킬 포인트의 초기값
     public float Hp = 10f;                                                // Hp
-    public float Attack = 2f;                                            // 공격력
+    public float BaseAttack = 2f;                                            // 일반 공격력
     public float SkillPoint = 0f;                                       // 스킬 포인트
     public float Speed = 5f;
 
@@ -34,8 +34,8 @@ public class PlayerAction : MonoBehaviour
         
         // HP, Attack, SkillPoint를 초기화한다.
         Hp = InitHP;
-        Attack = InitAttack;
-        SkillPoint = 0f;
+        BaseAttack = InitAttack;
+        SkillPoint = InitSkillPoint;
 
         // Skill버튼에 스페셜스킬 함수를 연동한다.
         PlayerSkill_Manager.Get_Inctance().Set_Skill(this, transform.parent.name);

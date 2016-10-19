@@ -1,9 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+// 보스 Kinoko의 LongAttack에 관한 스크립트.
 public class Kinoko_LongAttack_Action : MonoBehaviour {
 
-    GameObject target_pos = null;
+    GameObject target_pos = null;                                               
     GameObject collision_Effect = null;
     GameObject Defalut_Effect = null;
     GameObject mark = null;
@@ -87,7 +88,6 @@ public class Kinoko_LongAttack_Action : MonoBehaviour {
         }
 
         StopAllCoroutines();
-
         GetComponent<SphereCollider>().enabled = false;
 
         if (mark != null)
