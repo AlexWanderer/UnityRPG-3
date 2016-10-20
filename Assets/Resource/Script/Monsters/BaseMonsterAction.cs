@@ -66,6 +66,21 @@ public class BaseMonsterAction : MonsterAction {
         Target.Set_Demage(Attack, null);
     }
 
+    // Charm에 걸렸을때 실행되는 함수.
+    // time만큼 지난 후에는 Effect를 끄고 StartSet_Attack()를 실행시킨다. 몬스터 타입에 따라 상태이상을 표시하는 방식이 달라진다.
+    public override void Set_StateCharm(float time)
+    {
+        state = STATE.CHARM;
+
+
+        GameObject CharmEffect = Instantiate(EffectManager.Get_Inctance().Charm_Effect) as GameObject;
+        CharmEffect.transform.parent = Condition.transform;
+        CharmEffect.transform.localPosition = Vector3.zero;
+
+        Invoke("State_OFF", time);
+        Invoke("StartSet_Attack", time);
+    }
+
     void OnCollisionEnter(Collision obj)
     {
         // Player랑 충돌하면 Target을 충돌한 Player로 변경한다.

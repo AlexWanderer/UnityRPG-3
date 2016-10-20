@@ -175,12 +175,12 @@ public class NurseAction : PlayerAction {
         // Player의 회전값을 원래대로 되돌린다.
         transform.rotation = InitRotation;
 
-        // Target에게 3초동안 Charm 상태로 바꾼다.
-        Target.Set_StateCharm(Charm_Time);
-
         // Player들을 Attack상태로 바꾼다. ( Active 변환 때문.)
         PlayerManager.Get_Inctance().Set_Attack();
         MonsterManager.Get_Inctance().Set_ReAttack(Target.gameObject);
+
+        // Target에게 3초동안 Charm 상태로 바꾼다.
+        Target.Set_StateCharm(Charm_Time);
 
         SkillPoint = 0f;
         yield break;

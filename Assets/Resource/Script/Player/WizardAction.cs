@@ -95,7 +95,7 @@ public class WizardAction : PlayerAction
 
             // Effect와 Target의 거리가 0.5f 미만이면 ani를 원래 상태로 돌리고 while문을 벗어난다.
             // 날린 Attack이 몬스터에 맞을때까지 기다린후 공격하는 구조이다.
-            if(Distance(Effect.transform.position, Target.transform.position) < 0.5f )
+            if(Vector3.Distance(Effect.transform.position, Target.transform.position) < 0.5f )
             {
                 ani.speed = 1f;
                 break;
@@ -283,14 +283,6 @@ public class WizardAction : PlayerAction
         pos.y += 5.5f;
         Effect.transform.position = pos;
 
-    }
-
-
-
-    // A와 B사이의 거리를 반환하는 함수. ( 음수값이 없다. )
-    float Distance(Vector3 A, Vector3 B)
-    {
-        return Mathf.Abs(Vector3.Distance(A, B));
     }
 }
 

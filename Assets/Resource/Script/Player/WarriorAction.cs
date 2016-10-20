@@ -13,12 +13,11 @@ public class WarriorAction : PlayerAction
 
     public bool check_TargetApproach = false;                                                                              // Target과 가까이 있는지 아닌지 체크하는 변수.
 
-
-
     // Attack을 담당하는 Coroutine을 실행하는 함수.
     public override void Set_AniAttack()
     {
         state = STATE.ATTACK;
+        check_TargetApproach = false;
         ani.SetBool("Move", false);
         ani.SetBool("Attack", true);
 
@@ -33,11 +32,16 @@ public class WarriorAction : PlayerAction
         while (true)
         {
             // 상태가 Attack이 아닌경우 코루틴을 종료한다.
-            if (state != STATE.ATTACK) { yield break; }
+            if (state != STATE.ATTACK)
+            {
+                check_TargetApproach = false;
+                yield break;
+            }
 
             // Target이 null이거나 죽어있는 MonsterManager에게 새로운 Target을 받아온다.
             if (Target == null || Target.Check_Dead())
             {
+                check_TargetApproach = false;
                 MonsterManager.Get_Inctance().Set_ReTarget(this);
             }
 
@@ -51,7 +55,7 @@ public class WarriorAction : PlayerAction
             if (check_TargetApproach == false)
             {
                 // 스킬중엔 움직이지 않는다.
-                if (state == STATE.SKILL) { yield return null; }
+                if (state == STATE.SKILL || Target.Check_Dead()) { yield return null; }
 
                 Set_AniMove();
                 transform.Translate(Vector3.forward * Time.deltaTime * Speed);
@@ -71,7 +75,13 @@ public class WarriorAction : PlayerAction
     // Target을 공격하는 함수. Attack Ani에서 호출한다.
     public void Monster_Attack()
     {
-        Target.Set_Demage(BaseAttack, null);
+       bool check =  Target.Set_Demage(BaseAttack, null);
+
+        // 몬스터가 다 죽었을지 AttackCoroutine을 종료한다.
+        if(check)
+        {
+            StopCoroutine(C_Attack());
+        }
     }
 
 

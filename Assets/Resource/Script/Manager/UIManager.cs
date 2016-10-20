@@ -23,8 +23,7 @@ public class UIManager : MonoBehaviour
 
     public GameObject Mark_Prefab = null;
 
-    public GameObject Boss_UI = null;
-    public GameObject Boss_StateUI = null;
+    public GameObject Wave_UI = null;
 
     
 
@@ -187,5 +186,19 @@ public class UIManager : MonoBehaviour
     {
         Default_UI.SetActive(false);
         Win_UI.SetActive(true);
+    }
+
+    public void Set_WaveUI(int Now_wave, int All_wave)
+    {
+        string text = string.Format("Wave {0} / {1}", Now_wave, All_wave);
+
+        Wave_UI.GetComponent<UILabel>().text = text;
+
+        Wave_UI.SetActive(true);
+        Invoke("Off_WaveUI", 1f);
+    }
+    public void Off_WaveUI()
+    {
+        Wave_UI.SetActive(false);
     }
 }

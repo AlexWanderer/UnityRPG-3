@@ -1,35 +1,24 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
-//게임의 흐름을 관리하는 스크립트
+// 게임 전체적인 부분을 담당하는 스크립트.
+// 플레이어의 정보 ( Level이나 선택한 Player 캐릭터, 서포트 , 전체 획득 골드 등등등 )
 public class GameManager : MonoBehaviour {
 
-    public enum GMSTATE
-    {
-        IDLE,                               // 대기
-        NEXT,                             // 다음장소로 이동
-        BOSS,                             // 보스 만남
-        FAILD,                            // 실패
-        WIN,                              // 승리
-        MAX 
-    };
+    public string Select_Support_Name = null;
+    public GameObject[] Select_PlayerCharate = new GameObject[3];
 
-    public GMSTATE GMstate = GMSTATE.IDLE;                                                 // 스테이지의 상태
+    public float Level = 1f;
+    public float Exp = 100f;
+    public float Gold = 0f;
+    public List<GameObject> Get_Charater = new List<GameObject>();
+    public List<GameObject> Get_Supporter = new List<GameObject>();
+    public List<GameObject> Get_Item = new List<GameObject>();
 
-    Vector3 PlayerStandPos = Vector3.zero;
-    float Timer = 0f;
-   
+
     private static GameManager instance = null;
-    GameObject Boss = null;
 
-    // Use this for initialization
-    void Awake ()
-    {
-        instance = this;
-        GMstate = GMSTATE.NEXT;
-        PlayerStandPos = PlayerManager.Get_Inctance().transform.position;
-        Boss =  MonsterManager.Get_Inctance().gameObject.transform.FindChild("Boss_Collision").FindChild("EndPos").gameObject;
-    }
     public static GameManager Get_Inctance()
     {
         if (instance == null)
@@ -46,90 +35,4 @@ public class GameManager : MonoBehaviour {
         }
         return instance;
     }
-
-    void Update ()
-    {
-        Timer += Time.deltaTime;
-        UIManager.Get_Inctance().Set_Time((int)Timer);
-
-        // 게임 상황을 Update문으로 계속 확인한다.
-	    switch(GMstate)
-        {
-            case GMSTATE.IDLE:
-                {
-                    break;
-                }
-            case GMSTATE.NEXT:
-                {
-                    // 다음 장소로 가기 위해 Player들을 전부 대기상태로 한번 만들고 이동한다.
-                    PlayerManager.Get_Inctance().Invoke("Set_Idle", 0.5f);
-                    PlayerManager.Get_Inctance().Invoke("Set_Move", 0.6f);
-                    GMstate = GMSTATE.IDLE;
-                    break;
-                }
-
-            case GMSTATE.BOSS:
-                {
-                    PlayerManager.Get_Inctance().Set_Idle();
-                    MonsterManager.Get_Inctance().Set_Idle();
-                    GMstate = GMSTATE.IDLE;
-                    break;
-                }
-
-            case GMSTATE.WIN:
-                {
-                    PlayerManager.Get_Inctance().Set_Idle();
-                    UIManager.Get_Inctance().Set_WinUI();
-                    break;
-                }
-            case GMSTATE.FAILD:
-                {
-                    MonsterManager.Get_Inctance().Set_Idle();
-                    UIManager.Get_Inctance().Set_FaildUI();
-                    break;
-                }
-        }
-
-        float distance = Distance_Percent(PlayerStandPos, Boss.transform.position, PlayerManager.Get_Inctance().transform.position);
-        UIManager.Get_Inctance().Set_Space(distance);
-
-        if(0.6f < distance && distance < 0.8f)
-        {
-            UIManager.Get_Inctance().Set_Warning();
-        }
-
-    }
-
-    // 몬스터를 모두 해치우고 다음장소로 넘어가기위한 함수.
-    public void Set_Next()
-    {
-        GMstate = GMSTATE.NEXT;
-    }
-
-    // 스테이지를 실패하면 실행되는 함수
-    public void Set_Faild()
-    {
-        GMstate = GMSTATE.FAILD;
-    }
-    public void Set_Win()
-    {
-        GMstate = GMSTATE.WIN;
-    }
-
-
-    public void Set_Boss()
-    {
-        GMstate = GMSTATE.BOSS;
-    }
-
-    public float Distance_Percent(Vector3 A, Vector3 B, Vector3 NowPos)
-    {
-        float T = Vector3.Distance(A, B);
-        float C = Vector3.Distance(A, NowPos);
-
-        float value = C / T;
-
-        return value;
-    }
-
 }

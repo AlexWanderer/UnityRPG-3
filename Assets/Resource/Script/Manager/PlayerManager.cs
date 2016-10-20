@@ -181,7 +181,7 @@ public class PlayerManager : MonoBehaviour
 
         for(int i = 0; i < Characters.Length; i++)
         {
-            if (Characters[i] == null) { continue; }
+            if (Characters[i].GetComponent<PlayerAction>().Check_Dead()) { continue; }
 
             PlayerAction player = Characters[i].GetComponent<PlayerAction>();
             float value = player.Hp / player.InitHP;
@@ -311,14 +311,25 @@ public class PlayerManager : MonoBehaviour
 
                 if(DeadCount == Characters.Length)
                 {
-                    GameManager.Get_Inctance().Set_Faild();
+                    GameStateManager.Get_Inctance().Set_Faild();
                     StopAllCoroutines();
                 }
             }
         }
     }
 
+    public bool Check_StateAttack()
+    {
+        if(state == STATE.ATTACK)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
 
+    }
 
     void OnTriggerEnter(Collider obj)
     {

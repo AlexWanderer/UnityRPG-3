@@ -6,12 +6,18 @@ public class BossKinokoAction : MonsterAction {
     public GameObject LongAttack_Effect = null;                                     // 장거리공격 Effect
     public GameObject LongAttack_Position = null;                                 // 장거리공격이 나오는 위치
 
+    bool First_Appear = false;
+
     float PoisonDamage = 1f;
     float PoisonTime = 5f;
 
     void OnEnable()
     {
+        if(First_Appear == true) { return; }
+
         ActionCamera_Action.Get_Inctance().Set_preparation(transform, "Boss");
+
+        First_Appear = true;
         type = TYPE.BOSS;
         ani = GetComponent<Animator>();
     }
@@ -104,6 +110,19 @@ public class BossKinokoAction : MonsterAction {
         Effectc.name = "PoisonEffect";
         Effectc.transform.position = Target.gameObject.transform.position;
     }
+
+    // Charm에 걸렸을때 실행되는 함수.
+    // time만큼 지난 후에는 Effect를 끄고 StartSet_Attack()를 실행시킨다. 몬스터 타입에 따라 상태이상을 표시하는 방식이 달라진다.
+    public override void Set_StateCharm(float time)
+    {
+        state = STATE.CHARM;
+
+       GameObject States = UIManager.Get_Inctance().Boss_HP.transform.FindChild("State").gameObject;
+        States.GetComponent<UI_StateManager>().Start_PlayerState("Charm", time);
+
+        Invoke("StartSet_Attack", time);
+    }
+
 
     // A과 B의 거리를 구하는 함수
     float Distance(Vector3 A, Vector3 B)

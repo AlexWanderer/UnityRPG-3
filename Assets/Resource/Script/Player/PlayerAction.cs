@@ -21,6 +21,7 @@ public class PlayerAction : MonoBehaviour
     public float BaseAttack = 2f;                                            // 일반 공격력
     public float SkillPoint = 0f;                                       // 스킬 포인트
     public float Speed = 5f;
+    public int Level = 1;
 
     public MonsterAction Target = null;                              // Player가 공격할 Monster의 스크립트.
 

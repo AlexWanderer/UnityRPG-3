@@ -19,15 +19,8 @@ public class BossHpAction : MonoBehaviour {
     {
         while (true)
         {
-            // 만약 Hpbar의 대상이 없으면 Hpbar의 Active를 false한다.
-            if (Target == null)
-            {
-                gameObject.SetActive(false);
-                yield break;
-            }
-
             // Hpbar의 대상이 죽거나 모종의 이유로 active가 false가 됬을경우 Hpbar의 active를 false한다.
-            if (Target.activeSelf == false)
+            if (Target.GetComponent<MonsterAction>().Check_Dead())
             {
                 gameObject.SetActive(false);
                 yield break;

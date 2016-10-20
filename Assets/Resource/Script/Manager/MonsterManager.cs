@@ -82,7 +82,7 @@ public class MonsterManager : MonoBehaviour {
             Monster.SetActive(true);
             Monsters.Add(Monster);
         }
-        GameManager.Get_Inctance().Set_Boss();
+        GameStateManager.Get_Inctance().Set_Boss();
         StartCoroutine(Check_PlayerWin());
     }
 
@@ -99,7 +99,7 @@ public class MonsterManager : MonoBehaviour {
 
                     if (DeadCheck == Monsters.Count)
                     {
-                        GameManager.Get_Inctance().Set_Win();
+                        GameStateManager.Get_Inctance().Set_Win();
                         yield break;
                     }
                 }
@@ -143,25 +143,30 @@ public class MonsterManager : MonoBehaviour {
 
     // Monster가 죽으면 실행되는 함수.
     // Monster가 다 죽으면 GM의 Set_Next()를 호출한다.
-    public void Check_Dead(GameObject monster)
+    public bool Check_Dead(GameObject monster)
     {
         PlayerManager.Get_Inctance().Check_Target();
 
         int DeadCount = 0;
 
         //Monster의 active가 false == Dead . 그러므로 DeadCount를 늘린다.
-        for(int i = 0; i < Monsters.Count; i++)
+        for (int i = 0; i < Monsters.Count; i++)
         {
             if (Check_MonsterState(Monsters[i], "DEAD"))
+            {
                 DeadCount++;
+            }
         }
 
         //Monster의 죽은 숫자가 List에 있는 몬스터숫자랑 동일하면 모든 Monster가 죽은거니 GM의 Set_Next()를 호출한다.
         if (DeadCount == Monsters.Count)
         {
-           
-            GameManager.Get_Inctance().Set_Next();
+            GameStateManager.Get_Inctance().Set_Next();
+            return true;
         }
+
+        return false;
+
     }
     
     //살아있는 Monster를 Player의 Tager으로 설정해주는 함수.
@@ -172,6 +177,30 @@ public class MonsterManager : MonoBehaviour {
             if (Check_MonsterState(Monsters[i], "DEAD") == false) 
             {
                 Player.Target = Monsters[i].GetComponent<MonsterAction>();
+            }
+        }
+    }
+
+    public GameObject Get_AliveMonster()
+    {
+        for (int i = 0; i < Monsters.Count; i++)
+        {
+            if (Check_MonsterState(Monsters[i], "DEAD") == false)
+            {
+                return Monsters[i];
+            }
+        }
+
+        return null;
+    }
+
+    public void Set_AllMonsterDamage(float Value)
+    {
+        for (int i = 0; i < Monsters.Count; i++)
+        {
+            if (Check_MonsterState(Monsters[i], "DEAD") == false)
+            {
+                Monsters[i].GetComponent<MonsterAction>().Set_Demage(Value, "Skill");
             }
         }
     }
