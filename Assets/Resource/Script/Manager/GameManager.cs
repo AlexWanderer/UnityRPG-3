@@ -7,14 +7,14 @@ using System.Collections.Generic;
 public class GameManager : MonoBehaviour {
 
     public string Select_Support_Name = null;
-    public GameObject[] Select_PlayerCharate = new GameObject[3];
+    public List<string> SelectCharate = new List<string>();
+    List<string> GetCharaters = new List<string>();
+    List<string> Get_Supporter = new List<string>();
+    List<string> Get_Item = new List<string>();
 
     public float Level = 1f;
     public float Exp = 100f;
     public float Gold = 0f;
-    public List<GameObject> Get_Charater = new List<GameObject>();
-    public List<GameObject> Get_Supporter = new List<GameObject>();
-    public List<GameObject> Get_Item = new List<GameObject>();
 
 
     private static GameManager instance = null;
@@ -34,5 +34,47 @@ public class GameManager : MonoBehaviour {
             Debug.Log("Fail to get Manager Instance");
         }
         return instance;
+    }
+
+    void Awake()
+    {
+        instance = this;
+    }
+    public bool SelectCharater(string name, bool check)
+    {
+        if (check == false)
+        {
+            int index = SelectCharate.IndexOf(name);
+            SelectCharate[index] = null;
+            GameUIManager.Get_Inctance().Off_SelectCharaterUI(name);
+            return true;
+        }
+        else
+        {
+            int index = -1;
+
+            index = SelectCharate.IndexOf(null);
+
+            if(index == -1)
+            {
+                if (SelectCharate.Count >= 3)
+                {
+                    Debug.Log("3명이상은 선택하실수 없습니다. // 나중에 캐릭터 교체되게 수정");
+                    return false;
+                }
+
+                SelectCharate.Add(name);
+                index = SelectCharate.Count - 1;
+            }
+            else
+            {
+                SelectCharate[index] = name;
+            }
+
+            RecvCharaterInfo info = InfoManager.Get_Inctance().Get_CharaterInfo(name);
+            GameUIManager.Get_Inctance().On_SelectCharaterUI(index, info.Type, info.Name, info.Level);
+            return true;
+
+        }
     }
 }
