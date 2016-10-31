@@ -21,13 +21,40 @@ public class RecvCharaterInfo
     public int Special_time;
     public int Star;
 }
+public class RecvItemInfo
+{
+    public enum TYPE
+    {
+        MATERIAL,
+        WAPON,
+        MAX,
+    };
+
+    public string Icon_Name;
+    public string Name;
+    public TYPE Type;
+    public string Limit_Type1;
+    public string Limit_Type2;
+    public string Limit_Type3;
+    public string Effect_Text;
+    public float Attack;
+    public float Defense;
+    public float Speed;
+    public string Another;
+    public int Price;
+}
+
 
 public class InfoManager: MonoBehaviour {
 
     Dictionary<string, RecvCharaterInfo> CharaterInfos = new Dictionary<string, RecvCharaterInfo>();
+    Dictionary<string, RecvItemInfo> ItemInfos = new Dictionary<string, RecvItemInfo>();
 
     public GameObject CharaterView = null;
     public GameObject CharaterInfo_Prefab = null;
+
+    public GameObject ItemView = null;
+    public GameObject ItemInfo_Prefab = null;
 
     private static InfoManager instance = null;
 
@@ -60,8 +87,13 @@ public class InfoManager: MonoBehaviour {
         Dictionary<string, object> sendData = new Dictionary<string, object>();
         sendData.Add("contents", "GetCharaterInfo");
 
-
         StartCoroutine(NetworkManager.Instance.ProcessNetwork(sendData, ReplyCharaterInfo));
+
+        sendData.Clear();
+        sendData.Add("contents", "GetItemInfo");
+
+        StartCoroutine(NetworkManager.Instance.ProcessNetwork(sendData, ReplyItemInfo));
+
 
     }
 
@@ -94,5 +126,34 @@ public class InfoManager: MonoBehaviour {
         return CharaterInfos[name];
     }
 
+    public void ReplyItemInfo(string json)
+    {
+        // JsonReader.Deserialize() : 원하는 자료형의 json을 만들 수 있다
+        Dictionary<string, object> dataDic = (Dictionary<string, object>)JsonReader.Deserialize(json, typeof(Dictionary<string, object>));
 
+        foreach (KeyValuePair<string, object> info in dataDic)
+        {
+            RecvItemInfo data = JsonReader.Deserialize<RecvItemInfo>(JsonWriter.Serialize(info.Value));
+
+            ItemInfos.Add(data.Name, data);
+            ReadyViewItemInfo(ItemInfos[data.Name]);
+        }
+    }
+    private void ReadyViewItemInfo(RecvItemInfo data)
+    {
+        GameObject Info = Instantiate(ItemInfo_Prefab, ItemView.transform) as GameObject;
+        Info.name = data.Name;
+        Info.transform.localScale = Vector3.one;
+
+        string[] Limit_Types = new string[3] { data.Limit_Type1, data.Limit_Type2, data.Limit_Type3 };
+        Info.GetComponent<ItemInfo_Action>().Set_ItemInfo(data.Icon_Name, data.Name, data.Effect_Text, data.Type.ToString(),
+                                                                                                Limit_Types, data.Price);
+                
+
+        CharaterView.GetComponent<UIGrid>().repositionNow = true;
+    }
+    public RecvItemInfo Get_ItemInfo(string name)
+    {
+        return ItemInfos[name];
+    }
 }

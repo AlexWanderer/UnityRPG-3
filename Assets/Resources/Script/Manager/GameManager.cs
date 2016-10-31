@@ -17,7 +17,6 @@ public class GameManager : MonoBehaviour {
     public float Exp = 100f;
     public float Gold = 0f;
 
-
     private static GameManager instance = null;
 
     public static GameManager Get_Inctance()
