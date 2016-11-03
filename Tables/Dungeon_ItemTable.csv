@@ -1,0 +1,9 @@
+id,type,use,level,grade,idx,icon_name,name,description,limit_type1,limit_type2,limit_type3,effect_text,attack,defense,speed,price
+11111,1,1,1,1,1,arrow_9,작살창,NULL,warrior,,,,5,0,0,2000
+11231,1,1,2,3,1,fire_sphere,"불의 요석",NULL,magic,nurse,,,0,2,0,4000
+11321,1,1,3,2,1,battlemage_staff,익스플로젼,"어느 폭렬마가 사용했다던 지팡이",magic,nurse,,,3,0,0,2500
+12531,1,2,5,3,1,carin_amulet,"민첩의 목걸이","빨라지는 기분만 들게하는 목걸이",,,,,0,0,2,1800
+21111,2,1,1,1,1,bandage_rainbow,"빛의 천",NULL,,,,,0,0,0,1200
+21112,2,1,1,1,2,masters_locket,"사파이어 목걸이",NULL,,,,,0,0,0,8000
+22113,2,2,1,1,3,notebook,"누군가 쓰다만 편지","""161103 SY""",NULL,NULL,NULL,NULL,0,0,0,0
+23113,2,3,1,1,3,present_2,선물상자,NULL,NULL,NULL,NULL,NULL,0,0,0,0

@@ -9,7 +9,7 @@ public class GameManager : MonoBehaviour {
 
     public string Select_Support_Name = null;
     public List<string> SelectCharaters = new List<string>();
-    List<string> GetCharaters = new List<string>();
+    public List<string> GetCharaters = new List<string>();
     List<string> Get_Supporter = new List<string>();
     List<string> Get_Item = new List<string>();
 
@@ -39,6 +39,10 @@ public class GameManager : MonoBehaviour {
     void Awake()
     {
         instance = this;
+        GetCharaters.Add("warrior");
+        GetCharaters.Add("nurse");
+        GetCharaters.Add("pirate");
+        GetCharaters.Add("wizard");
         DontDestroyOnLoad(this);
     }
     public bool SelectCharater(string name, bool check)
@@ -72,7 +76,7 @@ public class GameManager : MonoBehaviour {
                 SelectCharaters[index] = name;
             }
 
-            RecvCharaterInfo info = InfoManager.Get_Inctance().Get_CharaterInfo(name);
+            RecvCharaterInfo info = CharaterManager.Instance.Get_CharaterInfo(name);
             GameUIManager.Get_Inctance().On_SelectCharaterUI(index, info.Type, info.Name, info.Level);
             return true;
 
@@ -91,7 +95,7 @@ public class GameManager : MonoBehaviour {
         {
             if (SelectCharaters[index] == null) { continue; }
 
-            SelectCharaterInfos[index] = InfoManager.Get_Inctance().Get_CharaterInfo(SelectCharaters[index]);
+            SelectCharaterInfos[index] = CharaterManager.Instance.Get_CharaterInfo(SelectCharaters[index]);
         }
 
         AsyncOperation async = SceneManager.LoadSceneAsync("Stage");
