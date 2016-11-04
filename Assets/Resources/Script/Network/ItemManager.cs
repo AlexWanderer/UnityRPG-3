@@ -67,11 +67,14 @@ public class ItemManager : MonoBehaviour
         string[] Limit_Types = new string[3] { data.Limit_Type1, data.Limit_Type2, data.Limit_Type3 };
         Info.GetComponent<ItemInfo_Action>().Set_ItemInfo(data.id, data.Icon_Name, data.Name, data.Type, data.Description,
                                                                                                 Limit_Types, data.Price);
+
+        ItemView.transform.parent.parent.GetComponent<StoreManager>().Set_BuyButton(Info.transform.FindChild("Button_Buy").GetComponent<UIButton>());
     }
     public ITEM Get_ItemInfo(int id)
     {
         return ItemInfos[id];
     }
+
 }
 
 public enum ITEMTYPE

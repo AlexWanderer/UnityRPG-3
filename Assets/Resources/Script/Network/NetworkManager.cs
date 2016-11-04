@@ -64,7 +64,7 @@ public class NetworkManager : MonoBehaviour
 
         // 7. 수신된 데이타에 에러가 있으면 에러를 출력한다. 
         // 프로토콜 단에서 에러 발생 : URL이 잘못됐을 때나, 네트워크가 끊겼을 때
-        if (!string.IsNullOrEmpty(www.error))
+        if (!string.IsNullOrEmpty(www.error) || string.IsNullOrEmpty(www.text))
         {
             Debug.Log(www.error);
             Debug.Log("네트워크 접속이 원할하지 않아 네트워크 관련 에러 발생");

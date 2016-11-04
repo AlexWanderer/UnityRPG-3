@@ -15,7 +15,7 @@ public class GameManager : MonoBehaviour {
 
     public float Level = 1f;
     public float Exp = 100f;
-    public float Gold = 0f;
+    public float Gold = 10000f;
 
     private static GameManager instance = null;
 
@@ -111,5 +111,11 @@ public class GameManager : MonoBehaviour {
     public void EndState()
     {
 
+    }
+
+    public void Set_BuyItem(int item_id, int user_gold, int item_count)
+    {
+       Get_Item.Add(ItemManager.Instance.Get_ItemInfo(item_id).Name);
+        InventoryManager.Get_Inctance().View_AddItem(item_id, item_count);
     }
 }

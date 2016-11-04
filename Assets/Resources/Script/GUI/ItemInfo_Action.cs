@@ -3,7 +3,7 @@ using System.Collections;
 
 public class ItemInfo_Action : MonoBehaviour {
 
-    int ID;
+    public int ID;
     public UISprite ItemIcon;
     public UILabel Label_Name;
     public UILabel Label_DescriptionText;
