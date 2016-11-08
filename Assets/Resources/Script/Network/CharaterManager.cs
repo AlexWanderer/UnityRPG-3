@@ -17,8 +17,10 @@ public class RecvCharaterInfo
     public int Speed;
     public int Touch_value;
     public int Touch_time;
+    public string Touch_text;
     public int Special_value;
     public int Special_time;
+    public string Special_text;
     public int Star;
 }
 
@@ -35,6 +37,8 @@ public class CharaterManager: MonoBehaviour {
 
     public GameObject CharaterInfoView = null;
     public GameObject CharaterInfo_Prefab = null;
+
+    public GameObject CharaterDetailedInfo = null;
 
     private CharaterManager() { }
 
@@ -98,10 +102,6 @@ public class CharaterManager: MonoBehaviour {
         SelectCharaterView.GetComponent<UIGrid>().repositionNow = true;
     }
 
-    public RecvCharaterInfo Get_CharaterInfo(string name)
-    {
-        return CharaterInfos[name];
-    }
     public void View_GetCharaterInfo(List<string> names)
     {
         for (int i = 0; i < names.Count; i++)
@@ -113,6 +113,28 @@ public class CharaterManager: MonoBehaviour {
             Info.GetComponent<CharaterInfo_Action>().Set_CharaterInfo(data.Name, data.Level, data.Star, data.Type);
 
             CharaterInfoView.GetComponent<UIGrid>().repositionNow = true;
+
+            // GameManager에 캐릭터 Get하는 부분 구현
+
+            Set_ButtonCharaterDetailedInfo(Info.GetComponent<UIButton>(), data.Name);
         }
+    }
+
+    public void Set_ButtonCharaterDetailedInfo(UIButton button, string charater_name)
+    {
+        EventDelegate.Parameter param = new EventDelegate.Parameter();
+
+        param.value = charater_name;
+        param.expectedType = typeof(string);
+
+        EventDelegate onClick = new EventDelegate(CharaterDetailedInfo.GetComponent<Charater_DetailedInfo_Action>(), "Set_Charater_DetailedInfo");
+
+        onClick.parameters[0] = param;
+        EventDelegate.Add(button.onClick, onClick);
+    }
+
+    public RecvCharaterInfo Get_CharaterInfo(string name)
+    {
+        return CharaterInfos[name];
     }
 }

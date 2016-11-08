@@ -88,6 +88,7 @@ public class NetworkManager : MonoBehaviour
                         case 1002: Debug.Log("아이디 생성에 실패하였습니다."); break;
                         case 1003: Debug.Log("게임 정보를 저장할 수 없습니다. \n 확인하시고 다시 시도하시기 바랍니다."); break;
                         case 1004: Debug.Log("없는 계정으로 접속하셨습니다.\n회원가입을 해주시기 바랍니다."); break;
+                        case 1005: Debug.Log("돈이 모자랍니다."); break;
                     }
                 }
                 // 실제 처리 결과물

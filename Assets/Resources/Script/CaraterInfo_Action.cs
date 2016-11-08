@@ -9,6 +9,7 @@ public class CaraterInfo_Action : MonoBehaviour {
     public UILabel Label_Defense;
     public GameObject Types;
     public GameObject Stars;
+    public string Equipment;
     public GameObject Check;
 
     public void Set_CharaterInfo(string name, int attack, int defense, string type, int star )

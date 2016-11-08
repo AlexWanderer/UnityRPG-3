@@ -79,14 +79,14 @@ public class InventoryManager : MonoBehaviour {
         SpringPanel.Begin(Items.transform.parent.gameObject, new Vector3(2, -67, 0), 8);
     }
 
-    public void View_AddItem(int item_id, int count)
+    public void View_AddItem(int item_id)
     {
         ITEM info = ItemManager.Instance.Get_ItemInfo(item_id);
         GameObject item = Instantiate(InvenItem_Prefab, Items.transform) as GameObject;
         item.transform.localScale = Vector3.one;
         item.name = info.Name;
 
-        item.GetComponent<InvenItem_Action>().Set_ItemInfo(info.id, count, info.Icon_Name, info.Idx, info.Grade, info.Name, info.Type);
+        item.GetComponent<InvenItem_Action>().Set_ItemInfo(info.id, info.Icon_Name, info.Idx, info.Grade, info.Name, info.Type);
 
         Items.GetComponent<UIGrid>().repositionNow = true;
     }

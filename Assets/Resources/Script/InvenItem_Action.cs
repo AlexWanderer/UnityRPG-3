@@ -5,18 +5,14 @@ public class InvenItem_Action : MonoBehaviour {
 
     public int ID;
     public ITEMTYPE Type;
-    public UILabel Count;
     public UISprite Icon;
     public GameObject Stars;
     public UILabel Name;
 
-    public void Set_ItemInfo(int id, int count, string icon_name, int idx, int grade, string name, ITEMTYPE type)
+    public void Set_ItemInfo(int id, string icon_name, int idx, int grade, string name, ITEMTYPE type)
     {
-        Debug.Log(idx);
-
         ID = id;
         Type = type;
-        Count.text = count.ToString();
         Icon.spriteName = icon_name;
         Name.text = name;
 

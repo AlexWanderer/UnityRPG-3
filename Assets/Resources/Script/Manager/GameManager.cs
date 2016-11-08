@@ -12,6 +12,7 @@ public class GameManager : MonoBehaviour {
     public List<string> GetCharaters = new List<string>();
     List<string> Get_Supporter = new List<string>();
     List<string> Get_Item = new List<string>();
+   public Dictionary<string, string> Charater_Equipment = new Dictionary<string, string>();
 
     public float Level = 1f;
     public float Exp = 100f;
@@ -113,9 +114,13 @@ public class GameManager : MonoBehaviour {
 
     }
 
-    public void Set_BuyItem(int item_id, int user_gold, int item_count)
+    public void Set_BuyItem(int item_id, int user_gold)
     {
        Get_Item.Add(ItemManager.Instance.Get_ItemInfo(item_id).Name);
-        InventoryManager.Get_Inctance().View_AddItem(item_id, item_count);
+        InventoryManager.Get_Inctance().View_AddItem(item_id);
+    }
+    public void Set_Charater_Equipment(string charater_name, int item_id)
+    {
+
     }
 }

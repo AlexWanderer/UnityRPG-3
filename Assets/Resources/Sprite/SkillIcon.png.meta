@@ -1,6 +1,6 @@
 fileFormatVersion: 2
-guid: 79c08e33f06539042bea4d1475ce081f
-timeCreated: 1478591845
+guid: ad8d1d3dcea5c6b4699bb56b679d132c
+timeCreated: 1478569978
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName: {}
@@ -47,7 +47,7 @@ TextureImporter:
   spritePixelsToUnits: 100
   alphaIsTransparency: 1
   spriteTessellationDetail: -1
-  textureType: 0
+  textureType: -1
   buildTargetSettings: []
   spriteSheet:
     serializedVersion: 2
