@@ -11,8 +11,44 @@ public class Charater_DetailedInfo_Action : MonoBehaviour
     public UILabel Touchskill_Explanation;
     public UISprite Specialskill_Icon;
     public UILabel Specialskill_Explanation;
-    public UISprite Item_Icon;
     public GameObject UI_Charater;
+    public UISprite Equipment_Icon;
+    public UILabel[] Label_Equipment_Effects;
+
+    void OnEnable()
+    {
+        for (int i = 0; i < Label_Equipment_Effects.Length; i++)
+        {
+            Label_Equipment_Effects[i].gameObject.SetActive(false);
+        }
+
+        if (GameManager.Get_Inctance().Charater_Equipment.ContainsKey(Label_Name.text))
+        {
+            Equipment_Icon.gameObject.SetActive(true);
+
+            ITEM EquipmentInfo = ItemManager.Instance.Get_ItemInfo(GameManager.Get_Inctance().Charater_Equipment[Label_Name.text]);
+
+            Equipment_Icon.spriteName = EquipmentInfo.Icon_Name;
+
+            int Effect_Type = (int)EquipmentInfo.Effect_Type;
+
+            if (EquipmentInfo.Effect_Type <= ITEMEFFECT_TYPE.DEFENSE && EquipmentInfo.Effect_Type != ITEMEFFECT_TYPE.NULL)
+            {
+                string[] Effects = EquipmentInfo.Effects.Split(',');
+
+                Label_Equipment_Effects[Effect_Type].gameObject.SetActive(true);
+                Label_Equipment_Effects[Effect_Type].text = "(+"+Effects[Effect_Type]+")";
+            }
+        }
+        else
+        {
+            for (int i = 0; i < Label_Equipment_Effects.Length; i++)
+            {
+                Label_Equipment_Effects[i].gameObject.SetActive(false);
+                Equipment_Icon.gameObject.SetActive(false);
+            }
+        }
+    }
 
     public void Set_Charater_DetailedInfo(string charater_name)
     {
@@ -28,11 +64,6 @@ public class Charater_DetailedInfo_Action : MonoBehaviour
 
         Touchskill_Explanation.text = data.Touch_text;
         Specialskill_Explanation.text = data.Special_text;
-
-        if (GameManager.Get_Inctance().Charater_Equipment.ContainsKey(charater_name))
-        {
-            Item_Icon.spriteName = GameManager.Get_Inctance().Charater_Equipment[charater_name];
-        }
 
         if (UI_Charater.transform.FindChild("UI_" + charater_name) != null)
         {
@@ -56,16 +87,12 @@ public class Charater_DetailedInfo_Action : MonoBehaviour
             UI_Charater.transform.GetChild(i).gameObject.SetActive(false);
         }
 
-
         gameObject.SetActive(true);
-    }
-    
-    public void Set_Charater_Equipment_Window()
-    {
     }
 
     public void Set_Equipment(int item_id)
     {
+        Equipment_Icon.gameObject.SetActive(true);
         GameManager.Get_Inctance().Set_Charater_Equipment(Label_Name.text, item_id);
     }
 }

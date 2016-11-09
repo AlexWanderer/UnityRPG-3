@@ -90,6 +90,13 @@ public enum ITEMUSE
     QUEST = 12,
     ITEM = 13,
 }
+public enum ITEMEFFECT_TYPE
+{
+    NULL = -1,
+    ATTACK = 0,
+    DEFENSE = 1,
+    SPEED = 2,
+};
 
 public class ITEM
 {
@@ -105,10 +112,8 @@ public class ITEM
     public string Limit_Type1;
     public string Limit_Type2;
     public string Limit_Type3;
-    public string Effect_Text;
-    public float Attack;
-    public float Defense;
-    public float Speed;
+    public ITEMEFFECT_TYPE Effect_Type;
+    public string Effects;
     public int Price;
 }
 

@@ -11,8 +11,8 @@ public class GameManager : MonoBehaviour {
     public List<string> SelectCharaters = new List<string>();
     public List<string> GetCharaters = new List<string>();
     List<string> Get_Supporter = new List<string>();
-    List<string> Get_Item = new List<string>();
-   public Dictionary<string, string> Charater_Equipment = new Dictionary<string, string>();
+   public List<int> Get_Item = new List<int>();
+   public Dictionary<string, int> Charater_Equipment = new Dictionary<string, int>();
 
     public float Level = 1f;
     public float Exp = 100f;
@@ -116,11 +116,29 @@ public class GameManager : MonoBehaviour {
 
     public void Set_BuyItem(int item_id, int user_gold)
     {
-       Get_Item.Add(ItemManager.Instance.Get_ItemInfo(item_id).Name);
+       Get_Item.Add(item_id);
         InventoryManager.Get_Inctance().View_AddItem(item_id);
     }
     public void Set_Charater_Equipment(string charater_name, int item_id)
     {
-
+        if(Charater_Equipment.ContainsKey(charater_name))
+        {
+            Charater_Equipment[charater_name] = item_id;
+        }
+        else
+        {
+            Charater_Equipment.Add(charater_name, item_id);
+        }
+    }
+    public int Get_CharaterEquipment_id(string charater_name)
+    {
+        if (Charater_Equipment.ContainsKey(charater_name) == false)
+        {
+            return -1;
+        }
+        else
+        {
+            return Charater_Equipment[charater_name];
+        }
     }
 }
