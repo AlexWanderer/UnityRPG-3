@@ -4,6 +4,9 @@ using System.Collections;
 public class GameUIManager : MonoBehaviour {
 
    public GameObject[] SelectWindow = new GameObject[3];
+    public UILabel Label_Level;
+    public UISlider Slider_Exp;
+    public UILabel Label_Gold;
 
     private static GameUIManager instance = null;
 
@@ -24,6 +27,28 @@ public class GameUIManager : MonoBehaviour {
         return instance;
     }
 
+    void Awake()
+    {
+        Label_Level.text = GameManager.Get_Inctance().Level.ToString();
+        float value = GameManager.Get_Inctance().Exp * (200f + GameManager.Get_Inctance().Level * 150f) * 0.001f;
+        Slider_Exp.value = value;
+        Label_Gold.text = GameManager.Get_Inctance().Gold.ToString();
+    }
+
+    public void Set_PlayerLevel(float level)
+    {
+        Label_Level.text = level.ToString();
+    }
+    public void Set_PlayerExp(float exp, float level)
+    {
+        float value = exp * (200f + level * 150f) * 0.001f;
+        Slider_Exp.value = value;
+    }
+    public void Set_PlayerGold(float gold)
+    {
+        Label_Gold.text = gold.ToString();
+    }
+
     public void On_SelectCharaterUI(int count, string type, string name, int level)
     {
         SelectWindow[count].GetComponent<SelectCharaterInfo_Action>().SelectCharaterInfo(level, name, type);
@@ -41,5 +66,9 @@ public class GameUIManager : MonoBehaviour {
                 return;
             }
         }
+    }
+    public void Set_StartStage()
+    {
+        GameManager.Get_Inctance().StateScene_Load();
     }
 }

@@ -37,7 +37,7 @@ public class Select_CharaterEquipment_Action : MonoBehaviour {
             Origin_Description.gameObject.SetActive(false);
         }
 
-        List<int> Equipments = GameManager.Get_Inctance().Get_Item;
+        List<int> Equipments = new List<int>(GameManager.Get_Inctance().Get_Item.Keys);
 
         for (int i = 0; i < Equipments.Count; i++)
         {

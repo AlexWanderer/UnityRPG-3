@@ -11,12 +11,13 @@ public class GameManager : MonoBehaviour {
     public List<string> SelectCharaters = new List<string>();
     public List<string> GetCharaters = new List<string>();
     List<string> Get_Supporter = new List<string>();
-   public List<int> Get_Item = new List<int>();
+   public Dictionary<int, int> Get_Item = new Dictionary<int, int>();
    public Dictionary<string, int> Charater_Equipment = new Dictionary<string, int>();
 
-    public float Level = 1f;
-    public float Exp = 100f;
-    public float Gold = 10000f;
+    public string ID;
+    public float Level;
+    public float Exp;
+    public float Gold;
 
     private static GameManager instance = null;
 
@@ -40,10 +41,6 @@ public class GameManager : MonoBehaviour {
     void Awake()
     {
         instance = this;
-        GetCharaters.Add("warrior");
-        GetCharaters.Add("nurse");
-        GetCharaters.Add("pirate");
-        GetCharaters.Add("wizard");
         DontDestroyOnLoad(this);
     }
     public bool SelectCharater(string name, bool check)
@@ -114,10 +111,19 @@ public class GameManager : MonoBehaviour {
 
     }
 
-    public void Set_BuyItem(int item_id, int user_gold)
+    public void Set_BuyItem(int item_id, float user_gold, int count)
     {
-       Get_Item.Add(item_id);
-        InventoryManager.Get_Inctance().View_AddItem(item_id);
+        if (Get_Item.ContainsKey(item_id))
+        {
+            Get_Item[item_id] = count;
+        }
+        else
+        {
+            Get_Item.Add(item_id, count);
+        }
+
+            InventoryManager.Get_Inctance().View_AddItem(item_id);
+        GameUIManager.Get_Inctance().Set_PlayerGold(Gold);
     }
     public void Set_Charater_Equipment(string charater_name, int item_id)
     {
@@ -141,4 +147,19 @@ public class GameManager : MonoBehaviour {
             return Charater_Equipment[charater_name];
         }
     }
+
+    public void Set_PlayerInfo(float level, float exp, float gold, string id)
+    {
+        ID = id;
+        Level = level;
+        Exp = exp;
+        Gold = gold;
+    }
+
+    public void Save_PlayerInfo(float level, float exp, float gold)
+    {
+
+    }
 }
+
+

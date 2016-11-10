@@ -79,34 +79,27 @@ public class StoreManager : MonoBehaviour {
         Dictionary<string, object> sendData = new Dictionary<string, object>();
         sendData.Add("contents", "SetBuyItem");
 
-        Debug.Log(GameManager.Get_Inctance().Gold);
-
         sendData.Add("user_gold", GameManager.Get_Inctance().Gold);
         sendData.Add("item_id", item_id);
+        sendData.Add("user_id", GameManager.Get_Inctance().ID);
 
         StartCoroutine(NetworkManager.Instance.ProcessNetwork(sendData, ReplyBuyItem));
     }
 
     public void ReplyBuyItem(string json)
     {
-        // JsonReader.Deserialize() : 원하는 자료형의 json을 만들 수 있다
+     //    JsonReader.Deserialize() : 원하는 자료형의 json을 만들 수 있다
          RecvBuyItem data = JsonReader.Deserialize<RecvBuyItem>(json);
 
-        if(data.message != null)
-        {
-            Debug.Log(data.message);
-            return;
-        }
-
-        GameManager.Get_Inctance().Gold = data.user_gold;
-        GameManager.Get_Inctance().Set_BuyItem(data.item_id, data.user_gold);
+         GameManager.Get_Inctance().Gold = data.user_gold;
+         GameManager.Get_Inctance().Set_BuyItem(data.item_id, data.user_gold, data.item_count);
 
     }
 
     private class RecvBuyItem
     {
-        public string message;
-        public int user_gold;
+        public float user_gold;
         public int item_id;
+        public int item_count;
     }
 }
