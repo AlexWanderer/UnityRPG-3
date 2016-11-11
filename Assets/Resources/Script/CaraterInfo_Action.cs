@@ -3,6 +3,7 @@ using System.Collections;
 
 public class CaraterInfo_Action : MonoBehaviour {
 
+    public int Index;
     public UILabel Label_Name;
     public UISprite CharaterIcon;
     public UILabel Label_Attack;
@@ -12,8 +13,9 @@ public class CaraterInfo_Action : MonoBehaviour {
     public string Equipment;
     public GameObject Check;
 
-    public void Set_CharaterInfo(string name, int attack, int defense, string type, int star )
+    public void Set_CharaterInfo(int index,string name, int attack, int defense, string type, int star )
     {
+        Index = index;
         Label_Name.text = name;
         CharaterIcon.spriteName = name;
         Label_Attack.text = attack.ToString();
@@ -29,7 +31,7 @@ public class CaraterInfo_Action : MonoBehaviour {
 
     public void Click_Charater()
     {
-        if (GameManager.Get_Inctance().SelectCharater(Label_Name.text, !Check.activeSelf) == false)
+        if (GameManager.Get_Inctance().SelectCharater(Index, !Check.activeSelf) == false)
         {
             return;
         }

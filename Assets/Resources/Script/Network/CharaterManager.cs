@@ -7,6 +7,7 @@ using JsonFx.Json;
 // 캐릭터의 정보를 받는 클래스
 public class RecvCharaterInfo
 {
+    public int Index;
     public string Name;
     public string Type;
     public int Level;
@@ -63,19 +64,12 @@ public class CharaterManager: MonoBehaviour {
     void Awake()
     {
         uniqueInstance = this;
-    }
-
-    // Use this for initialization
-    void Start ()
-    {
 
         Dictionary<string, object> sendData = new Dictionary<string, object>();
         sendData.Add("contents", "GetCharaterInfo");
 
         StartCoroutine(NetworkManager.Instance.ProcessNetwork(sendData, ReplyCharaterInfo));
-
     }
-
     //php에서 보낸 아이템의 모든 정보를 가져와 CharaterInfos에 저장하는 함수.
     public void ReplyCharaterInfo(string json)
     {
@@ -97,17 +91,17 @@ public class CharaterManager: MonoBehaviour {
         GameObject Info = Instantiate(SelectCharaterInfo_Prefab, SelectCharaterView.transform) as GameObject;
         Info.name = data.Name;
         Info.transform.localScale = Vector3.one;
-        Info.GetComponent<CaraterInfo_Action>().Set_CharaterInfo(data.Name, data.Attack, data.Defense, data.Type, data.Star);
+        Info.GetComponent<CaraterInfo_Action>().Set_CharaterInfo(data.Index,data.Name, data.Attack, data.Defense, data.Type, data.Star);
 
         SelectCharaterView.GetComponent<UIGrid>().repositionNow = true;
     }
 
-    public void View_GetCharaterInfo(List<string> names)
+    public void View_GetCharaterInfo(List<int> Indexs)
     {
-        for (int i = 0; i < names.Count; i++)
+        for (int i = 0; i < Indexs.Count; i++)
         {
             GameObject Info = Instantiate(CharaterInfo_Prefab, CharaterInfoView.transform) as GameObject;
-            RecvCharaterInfo data = Get_CharaterInfo(names[i]);
+            RecvCharaterInfo data = Get_CharaterInfo(Indexs[i]);
             Info.name = data.Name;
             Info.transform.localScale = Vector3.one;
             Info.GetComponent<CharaterInfo_Action>().Set_CharaterInfo(data.Name, data.Level, data.Star, data.Type);
@@ -133,7 +127,7 @@ public class CharaterManager: MonoBehaviour {
         EventDelegate.Add(button.onClick, onClick);
     }
 
-    public RecvCharaterInfo Get_CharaterInfo(string name)
+    public RecvCharaterInfo Get_CharaterInfo(int index)
     {
         return CharaterInfos[name];
     }

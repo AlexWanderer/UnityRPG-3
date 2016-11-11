@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class Select_CharaterEquipment_Action : MonoBehaviour {
 
-    string Charater_Name;
+    int Charater_Index;
     public UISprite Origin_Item_Icon;
     ITEM Origin_Item;
     public UILabel Origin_Description;
@@ -27,11 +27,11 @@ public class Select_CharaterEquipment_Action : MonoBehaviour {
         }
     }
 
-    public void View_Equipment(string Type, string charater_name)
+    public void View_Equipment(string Type, int charater_index)
     {
-        Charater_Name = charater_name;
+        Charater_Index = charater_index;
 
-        if(GameManager.Get_Inctance().Get_CharaterEquipment_id(Charater_Name) == -1)
+        if(GameManager.Get_Inctance().Get_CharaterEquipment_id(Charater_Index) == -1)
         {
             Origin_Item_Icon.gameObject.SetActive(false);
             Origin_Description.gameObject.SetActive(false);
@@ -114,6 +114,6 @@ public class Select_CharaterEquipment_Action : MonoBehaviour {
         Origin_Item_Icon.spriteName = Origin_Item.Icon_Name;
         Origin_Description.text = Origin_Item.Description;
 
-        GameManager.Get_Inctance().Set_Charater_Equipment(Charater_Name, Origin_Item.id);
+        GameManager.Get_Inctance().Set_Charater_Equipment(Charater_Index, Origin_Item.id);
     }
 }

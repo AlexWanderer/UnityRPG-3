@@ -35,15 +35,12 @@ public class ItemManager : MonoBehaviour
     void Awake()
     {
         uniqueInstance = this;
-    }
-    void Start()
-    {
+
         Dictionary<string, object> sendData = new Dictionary<string, object>();
         sendData.Add("contents", "GetItemInfo");
 
         StartCoroutine(NetworkManager.Instance.ProcessNetwork(sendData, ReplyItemInfo));
     }
-
 
     public void ReplyItemInfo(string json)
     {

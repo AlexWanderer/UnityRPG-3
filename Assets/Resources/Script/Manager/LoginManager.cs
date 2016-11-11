@@ -26,7 +26,7 @@ public class LoginManager : MonoBehaviour {
 
         sendData.Add("user_id", Login_ID.text);
         sendData.Add("user_pw", Login_PW.text);
-        sendData.Add("login_time", DateTime.Now.ToString("yyyy/dd/MM/hh/mm/ss"));
+        sendData.Add("login_time", DateTime.Now.ToString("yyyy-MM-dd-hh-mm-ss"));
 
         Debug.Log(DateTime.Now.ToString());
 
@@ -40,7 +40,7 @@ public class LoginManager : MonoBehaviour {
         if (data == null) { return; }
 
 
-        GameManager.Get_Inctance().Set_PlayerInfo(data.Level, data.Exp, data.Gold, data.ID );
+        GameManager.Get_Inctance().Set_PlayerInfo(data.Level, data.Exp, data.Gold, data.User_Index);
 
         // 회원 가입에 성공 했으므로 바로 로그인을 시도한다.
         StartCoroutine(Login());
@@ -75,7 +75,7 @@ public class LoginManager : MonoBehaviour {
 
         sendData.Add("user_id", Join_ID.text);
         sendData.Add("user_pw", Join_PW.text);
-        sendData.Add("join_time", DateTime.Now.ToString("yyyy-dd-MM-hh-mm-ss"));
+        sendData.Add("login_time", DateTime.Now.ToString("yyyy-MM-dd-hh-mm-ss"));
 
         Debug.Log(DateTime.Now.ToString());
 
@@ -88,7 +88,7 @@ public class LoginManager : MonoBehaviour {
 
         if(data == null) { return; }
 
-        GameManager.Get_Inctance().Set_PlayerInfo(data.Level, data.Exp, data.Gold, data.ID);
+        GameManager.Get_Inctance().Set_PlayerInfo(data.Level, data.Exp, data.Gold, data.User_Index);
 
         // 회원 가입에 성공 했으므로 바로 로그인을 시도한다.
         StartCoroutine(Login());
@@ -101,10 +101,9 @@ public class RecvPlayerInfo
     //  public string Charaters;
     ////    public string Items;
     //   public string Charater_Equipments;
+    public int User_Index;
     public string ID;
     public float Level;
     public float Exp;
     public float Gold;
-    public string Login_time;
-
 }

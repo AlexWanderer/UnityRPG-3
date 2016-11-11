@@ -8,13 +8,15 @@ public class InvenItem_Action : MonoBehaviour {
     public UISprite Icon;
     public GameObject Stars;
     public UILabel Name;
+    public UILabel Count;
 
-    public void Set_ItemInfo(int id, string icon_name, int idx, int grade, string name, ITEMTYPE type)
+    public void Set_ItemInfo(int id, string icon_name, int idx, int grade, string name, ITEMTYPE type, int count)
     {
         ID = id;
         Type = type;
         Icon.spriteName = icon_name;
         Name.text = name;
+        Count.text = count.ToString();
 
         if (Type == ITEMTYPE.EQUIPMENT)
         {

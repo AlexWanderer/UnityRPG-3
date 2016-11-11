@@ -8,13 +8,13 @@ using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour {
 
     public string Select_Support_Name = null;
-    public List<string> SelectCharaters = new List<string>();
-    public List<string> GetCharaters = new List<string>();
+    public List<int> SelectCharaters = new List<int>();
+    public List<int> GetCharaters = new List<int>();
     List<string> Get_Supporter = new List<string>();
    public Dictionary<int, int> Get_Item = new Dictionary<int, int>();
-   public Dictionary<string, int> Charater_Equipment = new Dictionary<string, int>();
+   public Dictionary<int, int> Charater_Equipment = new Dictionary<int, int>();
 
-    public string ID;
+    public int Index;
     public float Level;
     public float Exp;
     public float Gold;
@@ -43,22 +43,22 @@ public class GameManager : MonoBehaviour {
         instance = this;
         DontDestroyOnLoad(this);
     }
-    public bool SelectCharater(string name, bool check)
+    public bool SelectCharater(int index, bool check)
     {
         if (check == false)
         {
-            int index = SelectCharaters.IndexOf(name);
-            SelectCharaters[index] = null;
+            int List_index = SelectCharaters.IndexOf(index);
+            SelectCharaters[List_index] = 0;
             GameUIManager.Get_Inctance().Off_SelectCharaterUI(name);
             return true;
         }
         else
         {
-            int index = -1;
+            int List_index = -1;
 
-            index = SelectCharaters.IndexOf(null);
+            List_index = SelectCharaters.IndexOf(0);
 
-            if (index == -1)
+            if (List_index == -1)
             {
                 if (SelectCharaters.Count >= 3)
                 {
@@ -66,16 +66,16 @@ public class GameManager : MonoBehaviour {
                     return false;
                 }
 
-                SelectCharaters.Add(name);
-                index = SelectCharaters.Count - 1;
+                SelectCharaters.Add(index);
+                List_index = SelectCharaters.Count - 1;
             }
             else
             {
-                SelectCharaters[index] = name;
+                SelectCharaters[List_index] = index;
             }
 
-            RecvCharaterInfo info = CharaterManager.Instance.Get_CharaterInfo(name);
-            GameUIManager.Get_Inctance().On_SelectCharaterUI(index, info.Type, info.Name, info.Level);
+            RecvCharaterInfo info = CharaterManager.Instance.Get_CharaterInfo(index);
+            GameUIManager.Get_Inctance().On_SelectCharaterUI(List_index, info.Type, info.Name, info.Level);
             return true;
 
         }
@@ -91,7 +91,7 @@ public class GameManager : MonoBehaviour {
 
         for (int index = 0; index < SelectCharaters.Count; index++)
         {
-            if (SelectCharaters[index] == null) { continue; }
+            if (SelectCharaters[index] == 0) { continue; }
 
             SelectCharaterInfos[index] = CharaterManager.Instance.Get_CharaterInfo(SelectCharaters[index]);
         }
@@ -122,35 +122,35 @@ public class GameManager : MonoBehaviour {
             Get_Item.Add(item_id, count);
         }
 
-            InventoryManager.Get_Inctance().View_AddItem(item_id);
+        InventoryManager.Get_Inctance().View_AddItem(item_id, count);
         GameUIManager.Get_Inctance().Set_PlayerGold(Gold);
     }
-    public void Set_Charater_Equipment(string charater_name, int item_id)
+    public void Set_Charater_Equipment(int charater_index, int item_id)
     {
-        if(Charater_Equipment.ContainsKey(charater_name))
+        if(Charater_Equipment.ContainsKey(charater_index))
         {
-            Charater_Equipment[charater_name] = item_id;
+            Charater_Equipment[charater_index] = item_id;
         }
         else
         {
-            Charater_Equipment.Add(charater_name, item_id);
+            Charater_Equipment.Add(charater_index, item_id);
         }
     }
-    public int Get_CharaterEquipment_id(string charater_name)
+    public int Get_CharaterEquipment_id(int charater_index)
     {
-        if (Charater_Equipment.ContainsKey(charater_name) == false)
+        if (Charater_Equipment.ContainsKey(charater_index) == false)
         {
             return -1;
         }
         else
         {
-            return Charater_Equipment[charater_name];
+            return Charater_Equipment[charater_index];
         }
     }
 
-    public void Set_PlayerInfo(float level, float exp, float gold, string id)
+    public void Set_PlayerInfo(float level, float exp, float gold, int index)
     {
-        ID = id;
+        Index = index;
         Level = level;
         Exp = exp;
         Gold = gold;
