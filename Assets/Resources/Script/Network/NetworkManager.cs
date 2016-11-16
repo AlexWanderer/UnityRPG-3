@@ -95,8 +95,11 @@ public class NetworkManager : MonoBehaviour
                 // 실제 처리 결과물
                 if (receivePacket.ContainsKey("data"))
                 {
-                    // delegate 함수에게 결과물을 돌려 준다.(결과물만 JSON을 변환해서 전달)
-                    _reply(JsonWriter.Serialize(receivePacket["data"]));
+                    if ((int)receivePacket["result"] == 0)
+                    {
+                        // delegate 함수에게 결과물을 돌려 준다.(결과물만 JSON을 변환해서 전달)
+                        _reply(JsonWriter.Serialize(receivePacket["data"]));
+                    }
                 }
                 Debug.Log("Receive JSON : " + www.text);
             }// end if()

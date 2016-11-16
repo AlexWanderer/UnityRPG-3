@@ -28,12 +28,12 @@ public class InventoryManager : MonoBehaviour {
         return instance;
     }
 
-    void Start()
+    void Awake()
     {
-        Get_UserItemID();
+        Get_PlayerItem();
     }
 
-    void Get_UserItemID()
+    public void Get_PlayerItem()
     {
         Dictionary<string, object> sendData = new Dictionary<string, object>();
         sendData.Add("contents", "GetUserItemID");

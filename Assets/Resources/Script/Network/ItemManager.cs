@@ -40,6 +40,7 @@ public class ItemManager : MonoBehaviour
         sendData.Add("contents", "GetItemInfo");
 
         StartCoroutine(NetworkManager.Instance.ProcessNetwork(sendData, ReplyItemInfo));
+        DontDestroyOnLoad(this);
     }
 
     public void ReplyItemInfo(string json)
@@ -69,6 +70,8 @@ public class ItemManager : MonoBehaviour
     }
     public ITEM Get_ItemInfo(int id)
     {
+        if(!ItemInfos.ContainsKey(id)) { return null; }
+
         return ItemInfos[id];
     }
 

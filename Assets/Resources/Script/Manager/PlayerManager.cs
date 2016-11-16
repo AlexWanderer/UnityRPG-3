@@ -345,6 +345,15 @@ public class PlayerManager : MonoBehaviour
 
     }
 
+    public void Set_Off()
+    {
+        for(int i = 0; i < Characters.Length; i++ )
+        {
+            Destroy(Characters[i]);
+        }
+               
+    }
+
     void OnTriggerEnter(Collider obj)
     {
         // Monster의 출현범위 안에 들어가면 Monster들을 활성화시키고 MonsterManager와 Player에게 Attack을 준비하는 함수를 호출한다.

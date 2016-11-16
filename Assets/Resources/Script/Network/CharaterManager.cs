@@ -31,7 +31,7 @@ public class CharaterManager: MonoBehaviour {
     private static volatile CharaterManager uniqueInstance;
     private static object _lock = new System.Object();
 
-    Dictionary<string, RecvCharaterInfo> CharaterInfos = new Dictionary<string, RecvCharaterInfo>();
+    Dictionary<int, RecvCharaterInfo> CharaterInfos = new Dictionary<int, RecvCharaterInfo>();
 
     public GameObject SelectCharaterView = null;
     public GameObject SelectCharaterInfo_Prefab = null;
@@ -69,6 +69,7 @@ public class CharaterManager: MonoBehaviour {
         sendData.Add("contents", "GetCharaterInfo");
 
         StartCoroutine(NetworkManager.Instance.ProcessNetwork(sendData, ReplyCharaterInfo));
+        DontDestroyOnLoad(this);
     }
     //php에서 보낸 아이템의 모든 정보를 가져와 CharaterInfos에 저장하는 함수.
     public void ReplyCharaterInfo(string json)
@@ -80,8 +81,8 @@ public class CharaterManager: MonoBehaviour {
         {
             RecvCharaterInfo data = JsonReader.Deserialize<RecvCharaterInfo>(JsonWriter.Serialize(info.Value));
 
-            CharaterInfos.Add(data.Name, data);
-            ReadyViewSelectCharaterInfo(CharaterInfos[data.Name]);
+            CharaterInfos.Add(data.Index, data);
+            ReadyViewSelectCharaterInfo(CharaterInfos[data.Index]);
         }
         View_GetCharaterInfo(GameManager.Get_Inctance().GetCharaters);
     }
@@ -110,16 +111,16 @@ public class CharaterManager: MonoBehaviour {
 
             // GameManager에 캐릭터 Get하는 부분 구현
 
-            Set_ButtonCharaterDetailedInfo(Info.GetComponent<UIButton>(), data.Name);
+            Set_ButtonCharaterDetailedInfo(Info.GetComponent<UIButton>(), data.Index);
         }
     }
 
-    public void Set_ButtonCharaterDetailedInfo(UIButton button, string charater_name)
+    public void Set_ButtonCharaterDetailedInfo(UIButton button, int charater_index)
     {
         EventDelegate.Parameter param = new EventDelegate.Parameter();
 
-        param.value = charater_name;
-        param.expectedType = typeof(string);
+        param.value = charater_index;
+        param.expectedType = typeof(int);
 
         EventDelegate onClick = new EventDelegate(CharaterDetailedInfo.GetComponent<Charater_DetailedInfo_Action>(), "Set_Charater_DetailedInfo");
 
@@ -129,6 +130,6 @@ public class CharaterManager: MonoBehaviour {
 
     public RecvCharaterInfo Get_CharaterInfo(int index)
     {
-        return CharaterInfos[name];
+        return CharaterInfos[index];
     }
 }

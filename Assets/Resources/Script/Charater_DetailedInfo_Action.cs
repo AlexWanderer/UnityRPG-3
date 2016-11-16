@@ -55,6 +55,7 @@ public class Charater_DetailedInfo_Action : MonoBehaviour
     {
         RecvCharaterInfo data = CharaterManager.Instance.Get_CharaterInfo(index);
 
+        Index = index;
         Label_Name.text = data.Name;
         Type.spriteName = data.Type;
         Label_attack.text = data.Attack.ToString();

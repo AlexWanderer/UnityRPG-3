@@ -8,14 +8,14 @@ using System;
 
 public class LoginManager : MonoBehaviour {
 
-    public UILabel Login_ID;
-    public UILabel Login_PW;
-    public UILabel Join_ID;
-    public UILabel Join_PW;
+    public UIInput Login_ID;
+    public UIInput Login_PW;
+    public UIInput Join_ID;
+    public UIInput Join_PW;
 
 	public void Set_Login()
     {
-        if (Login_ID.text.Equals("아이디를 입력해주세요") || Login_PW.text.Equals("비밀번호를 입력해주세요"))
+        if (Login_ID.value.Equals("아이디를 입력해주세요") || Login_PW.value.Equals("비밀번호를 입력해주세요"))
         {
             Debug.Log("계정  및 암호가 입력되지 않았습니다. 확인하고 다시 시도 하시기 바랍니다.");
             return;
@@ -24,8 +24,8 @@ public class LoginManager : MonoBehaviour {
         Dictionary<string, object> sendData = new Dictionary<string, object>();
         sendData.Add("contents", "SetLogin");
 
-        sendData.Add("user_id", Login_ID.text);
-        sendData.Add("user_pw", Login_PW.text);
+        sendData.Add("user_id", Login_ID.value);
+        sendData.Add("user_pw", Login_PW.value);
         sendData.Add("login_time", DateTime.Now.ToString("yyyy-MM-dd-hh-mm-ss"));
 
         Debug.Log(DateTime.Now.ToString());
@@ -58,13 +58,13 @@ public class LoginManager : MonoBehaviour {
 
     public void Set_Join()
     {
-        if (Join_ID.text.Equals("아이디를 입력해주세요") || Join_PW.text.Equals("비밀번호를 입력해주세요"))
+        if (Join_ID.value.Equals("아이디를 입력해주세요") || Join_PW.value.Equals("비밀번호를 입력해주세요"))
         {
             Debug.Log("계정  및 암호가 입력되지 않았습니다. 확인하고 다시 시도 하시기 바랍니다.");
             return;
         }
 
-        if (Join_ID.text.Length < 2 || Join_PW.text.Length < 1)
+        if (Join_ID.value.Length < 2 || Join_PW.value.Length < 1)
         {
             Debug.Log("계정과 암호는 4글자 이상으로 만들어야 합니다. 확인하고 다시 시도 하시기 바랍니다.");
             return;
@@ -73,9 +73,9 @@ public class LoginManager : MonoBehaviour {
         Dictionary<string, object> sendData = new Dictionary<string, object>();
         sendData.Add("contents", "SetJoin");
 
-        sendData.Add("user_id", Join_ID.text);
-        sendData.Add("user_pw", Join_PW.text);
-        sendData.Add("login_time", DateTime.Now.ToString("yyyy-MM-dd-hh-mm-ss"));
+        sendData.Add("user_id", Join_ID.value);
+        sendData.Add("user_pw", Join_PW.value);
+        sendData.Add("join_time", DateTime.Now.ToString("yyyy-MM-dd-hh-mm-ss"));
 
         Debug.Log(DateTime.Now.ToString());
 
@@ -103,7 +103,7 @@ public class RecvPlayerInfo
     //   public string Charater_Equipments;
     public int User_Index;
     public string ID;
-    public float Level;
+    public int Level;
     public float Exp;
     public float Gold;
 }

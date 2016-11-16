@@ -2,20 +2,22 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
+using JsonFx.Json;
 
 // 게임 전체적인 부분을 담당하는 스크립트.
 // 플레이어의 정보 ( Level이나 선택한 Player 캐릭터, 서포트 , 전체 획득 골드 등등등 )
-public class GameManager : MonoBehaviour {
+public class GameManager : MonoBehaviour
+{
 
     public string Select_Support_Name = null;
     public List<int> SelectCharaters = new List<int>();
     public List<int> GetCharaters = new List<int>();
     List<string> Get_Supporter = new List<string>();
-   public Dictionary<int, int> Get_Item = new Dictionary<int, int>();
-   public Dictionary<int, int> Charater_Equipment = new Dictionary<int, int>();
+    public Dictionary<int, int> Get_Item = new Dictionary<int, int>();
+    public Dictionary<int, int> Charater_Equipment = new Dictionary<int, int>();
 
     public int Index;
-    public float Level;
+    public int Level;
     public float Exp;
     public float Gold;
 
@@ -106,10 +108,6 @@ public class GameManager : MonoBehaviour {
 
         GameStateManager.Get_Inctance().StartState(SelectCharaterInfos);
     }
-    public void EndState()
-    {
-
-    }
 
     public void Set_BuyItem(int item_id, float user_gold, int count)
     {
@@ -127,7 +125,7 @@ public class GameManager : MonoBehaviour {
     }
     public void Set_Charater_Equipment(int charater_index, int item_id)
     {
-        if(Charater_Equipment.ContainsKey(charater_index))
+        if (Charater_Equipment.ContainsKey(charater_index))
         {
             Charater_Equipment[charater_index] = item_id;
         }
@@ -135,6 +133,19 @@ public class GameManager : MonoBehaviour {
         {
             Charater_Equipment.Add(charater_index, item_id);
         }
+
+        Dictionary<string, object> sendData = new Dictionary<string, object>();
+        sendData.Add("contents", "SetCharaterEquipment");
+
+        sendData.Add("user_id", Index);
+        sendData.Add("charater_index", charater_index);
+        sendData.Add("item_id", item_id);
+
+        StartCoroutine(NetworkManager.Instance.ProcessNetwork(sendData, Reply_SetCharaterEquipment));
+    }
+    void Reply_SetCharaterEquipment(string json)
+    {
+        Debug.Log("장비를 선택할때마다 서버에 연결하는데 좀더 효과적인 방법이 없을까?");
     }
     public int Get_CharaterEquipment_id(int charater_index)
     {
@@ -148,18 +159,57 @@ public class GameManager : MonoBehaviour {
         }
     }
 
-    public void Set_PlayerInfo(float level, float exp, float gold, int index)
+    public void Set_PlayerInfo(int level, float exp, float gold, int index)
     {
         Index = index;
         Level = level;
         Exp = exp;
         Gold = gold;
+
+        Get_PlayerCharaterInfo();
     }
 
-    public void Save_PlayerInfo(float level, float exp, float gold)
+    public void Get_PlayerCharaterInfo()
     {
+        Dictionary<string, object> sendData = new Dictionary<string, object>();
+        sendData.Add("contents", "GetUserCharaterInfo");
 
+        sendData.Add("user_id", Index);
+
+        StartCoroutine(NetworkManager.Instance.ProcessNetwork(sendData, ReplyPlayerCharaterInfo));
     }
+    public void ReplyPlayerCharaterInfo(string json)
+    {
+        // JsonReader.Deserialize() : 원하는 자료형의 json을 만들 수 있다
+        Dictionary<string, object> dataDic = (Dictionary<string, object>)JsonReader.Deserialize(json, typeof(Dictionary<string, object>));
+
+        if (dataDic == null) { return; }
+
+        foreach (KeyValuePair<string, object> info in dataDic)
+        {
+            RecvPlayerCharaterInfo data = JsonReader.Deserialize<RecvPlayerCharaterInfo>(JsonWriter.Serialize(info.Value));
+
+            GetCharaters.Add(data.id);
+            Charater_Equipment.Add(data.id, data.equipment_id);
+        }
+    }
+
+    void LoadPlayerData()
+    {
+        Dictionary<string, object> sendData = new Dictionary<string, object>();
+        sendData.Add("contents", "GetUserCharaterInfo");
+
+        sendData.Add("user_id", Index);
+
+        StartCoroutine(NetworkManager.Instance.ProcessNetwork(sendData, ReplyPlayerCharaterInfo));
+    }
+
+    private class RecvPlayerCharaterInfo
+    {
+        public int id;
+        public int equipment_id;
+    }
+
 }
 
 

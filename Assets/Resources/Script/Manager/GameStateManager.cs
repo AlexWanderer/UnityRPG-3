@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 //스테이지의 흐름을 관리하는 스크립트
 public class GameStateManager : MonoBehaviour {
@@ -88,7 +89,17 @@ public class GameStateManager : MonoBehaviour {
                         // 다음 장소로 가기 위해 Player들을 전부 대기상태로 한번 만들고 이동한다.
                         PlayerManager.Get_Inctance().Set_Idle();
                         PlayerManager.Get_Inctance().Invoke("Set_Move", 0.6f);
-                        Now_Wave++;
+
+                        Now_Wave = 1;
+
+                        for(int i = 0; i < All_Wave; i++)
+                        {
+                            if(MonsterManager.Get_Inctance().transform.GetChild(i).GetComponent<BoxCollider>().enabled == false)
+                            {
+                                Now_Wave++;
+                            }
+                        }
+
                         UIManager.Get_Inctance().Set_WaveUI(Now_Wave, All_Wave);
                         GMstate = GMSTATE.IDLE;
                         break;
@@ -104,8 +115,10 @@ public class GameStateManager : MonoBehaviour {
 
                 case GMSTATE.WIN:
                     {
-                        PlayerManager.Get_Inctance().Set_Idle();
+                        PlayerManager.Get_Inctance().Set_Off();
                         UIManager.Get_Inctance().Set_WinUI();
+                        StateWinManager.Get_Inctance().View_UI(Timer, GameManager.Get_Inctance().Level, 50);
+                        GMstate = GMSTATE.IDLE;
                         break;
                     }
                 case GMSTATE.FAILD:
@@ -158,4 +171,18 @@ public class GameStateManager : MonoBehaviour {
         return value;
     }
 
+
+    public void MainScene_Load()
+    {
+        StartCoroutine(C_MainScene());
+    }
+    IEnumerator C_MainScene()
+    {
+        AsyncOperation async = SceneManager.LoadSceneAsync("Main");
+
+        while (!async.isDone)
+        {
+            yield return null;
+        }
+    }
 }
