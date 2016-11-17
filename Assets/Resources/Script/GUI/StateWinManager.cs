@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using JsonFx.Json;
 
 public class StateWinManager : MonoBehaviour {
 
@@ -94,7 +95,16 @@ public class StateWinManager : MonoBehaviour {
 
     void Reply_SendClearReward(string json)
     {
-        Debug.Log(json);
+        // JsonReader.Deserialize() : 원하는 자료형의 json을 만들 수 있다
+        RecvClearReward data = JsonReader.Deserialize<RecvClearReward>(json);
+
+        GameManager.Get_Inctance().Gold = data.gold;
+        Gold.text = data.gold.ToString();
+    }
+
+    private class RecvClearReward
+    {
+        public int gold;
     }
 
 }

@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class GameUIManager : MonoBehaviour {
 
@@ -29,10 +30,23 @@ public class GameUIManager : MonoBehaviour {
 
     void Awake()
     {
+        Debug.Log(GameManager.Get_Inctance().Gold.ToString());
         Label_Level.text = GameManager.Get_Inctance().Level.ToString();
         float value = GameManager.Get_Inctance().Exp * (200f + GameManager.Get_Inctance().Level * 150f) * 0.001f;
         Slider_Exp.value = value;
         Label_Gold.text = GameManager.Get_Inctance().Gold.ToString();
+
+        List<int> SelectCharater = GameManager.Get_Inctance().SelectCharaters;
+
+        for (int i = 0; i < SelectWindow.Length; i++)
+        {
+            SelectWindow[i].SetActive(false);
+        }
+
+        for (int i = 0; i < SelectCharater.Count; i++)
+        {
+            On_SelectCharaterUI(SelectCharater[i], i);
+        }
     }
 
     public void Set_PlayerLevel(float level)
@@ -49,23 +63,16 @@ public class GameUIManager : MonoBehaviour {
         Label_Gold.text = gold.ToString();
     }
 
-    public void On_SelectCharaterUI(int count, string type, string name, int level)
+    public void On_SelectCharaterUI(int index, int count)
     {
-        SelectWindow[count].GetComponent<SelectCharaterInfo_Action>().SelectCharaterInfo(level, name, type);
+        RecvCharaterInfo info = CharaterManager.Instance.Get_CharaterInfo(index);
+
+        SelectWindow[count].GetComponent<SelectCharaterInfo_Action>().SelectCharaterInfo(info.Level, info.Name, info.Type);
         SelectWindow[count].SetActive(true);
     }
-    public void Off_SelectCharaterUI(string name)
+    public void Off_SelectCharaterUI(int index)
     {
-        for(int i = 0; i < SelectWindow.Length; i++)
-        {
-            string UI_name = SelectWindow[i].transform.FindChild("Sprite_CharaterIcon").GetComponent<UISprite>().spriteName;
-
-            if (UI_name.Contains(name))
-            {
-                SelectWindow[i].SetActive(false);
-                return;
-            }
-        }
+        SelectWindow[index].SetActive(false);
     }
     public void Set_StartStage()
     {

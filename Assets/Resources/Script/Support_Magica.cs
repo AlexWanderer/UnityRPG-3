@@ -8,8 +8,7 @@ public class Support_Magica : Support_Action {
     void Start()
     {
         // 임시 멘트
-        Ment = new string[] { "힘내!", "화이팅!", "Go!\n두줄연습용" , "게임을 시작합니다.", "영웅은 죽지 않아요.", "기타등등", "10/ 20"};
-        SkillMent = "익스플로젼!!!!";
+        Ment = new string[] { "와↗가↘나→와~~ 메구밍!!!", "연어는 최고죠!! 연어연어연어!!", "Go!\n힘차게 갑시다!" , "취업하고싶다!", "영웅은 죽지 않아요.", "도와줘요 코딩요정!", "코딩의 요정은 컴파일러의 복수를 하러왔어."};
 
         Skill_Damage = 30f;
 
@@ -40,7 +39,6 @@ public class Support_Magica : Support_Action {
        if(PlayerManager.Get_Inctance().Check_StateAttack() == false) { return; }
 
         Skill_Use = true;
-        Support_MentLabel.text = SkillMent;
 
         StartCoroutine(C_Support_Skill());
     }

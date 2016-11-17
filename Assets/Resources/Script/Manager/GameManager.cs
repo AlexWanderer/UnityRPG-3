@@ -21,7 +21,12 @@ public class GameManager : MonoBehaviour
     public float Exp;
     public float Gold;
 
+    GameObject MessageBox = null;
+    public GameObject MessageBox_Prefab = null;
+
+
     private static GameManager instance = null;
+
 
     public static GameManager Get_Inctance()
     {
@@ -51,13 +56,14 @@ public class GameManager : MonoBehaviour
         {
             int List_index = SelectCharaters.IndexOf(index);
             SelectCharaters[List_index] = 0;
-            GameUIManager.Get_Inctance().Off_SelectCharaterUI(name);
+            GameUIManager.Get_Inctance().Off_SelectCharaterUI(List_index);
             return true;
         }
         else
         {
             int List_index = -1;
 
+            //  선택했다 취소한 애가 있는지 체크
             List_index = SelectCharaters.IndexOf(0);
 
             if (List_index == -1)
@@ -76,8 +82,7 @@ public class GameManager : MonoBehaviour
                 SelectCharaters[List_index] = index;
             }
 
-            RecvCharaterInfo info = CharaterManager.Instance.Get_CharaterInfo(index);
-            GameUIManager.Get_Inctance().On_SelectCharaterUI(List_index, info.Type, info.Name, info.Level);
+            GameUIManager.Get_Inctance().On_SelectCharaterUI(index, List_index);
             return true;
 
         }
@@ -204,6 +209,24 @@ public class GameManager : MonoBehaviour
         StartCoroutine(NetworkManager.Instance.ProcessNetwork(sendData, ReplyPlayerCharaterInfo));
     }
 
+    public void Set_Message(string message)
+    {
+        if(MessageBox == null)
+        {
+            GameObject MB = Instantiate(MessageBox_Prefab, GameObject.Find("UI Root").gameObject.transform) as GameObject;
+            MB.transform.localPosition = Vector3.zero;
+            MB.transform.localScale = Vector3.one;
+            MessageBox = MB;
+        }
+
+        MessageBox.GetComponent<MessageBox_Action>().Set_Message(message);
+        return;
+    }
+
+    public bool Check_SelectCharater(int index)
+    {
+        return SelectCharaters.Contains(index);
+    }
     private class RecvPlayerCharaterInfo
     {
         public int id;
